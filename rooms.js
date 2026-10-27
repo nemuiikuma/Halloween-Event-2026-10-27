@@ -1,3 +1,4 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 const RoomUI=(()=>{
   const SUPABASE_URL='https://rukxdhojmnrcbxbjrzsn.supabase.co';
   const SUPABASE_KEY='sb_publishable_hRMfYZTp6WYHp6ddDCR6Mw_1iFdqhJ4';
@@ -46,7 +47,7 @@ const RoomUI=(()=>{
     document.querySelector('#leave-room')?.addEventListener('click',leave);
   }
   async function act(){try{const name=currentGame==='among'?'start_among_game':'draw_defence_card';await rpc(name,{p_room_code:session.roomCode,p_player_token:session.playerToken});await refresh();}catch(error){const el=document.querySelector('#room-stage-error');if(el)el.textContent=error.message;}}
-  function leave(){clearInterval(timer);timer=null;sessionStorage.removeItem(`room_${currentGame}`);session=null;const view=document.querySelector('#room-view');if(view){view.innerHTML=entry(currentGame);bindEntry();}}
+  async function leave(){const leaving=session;clearInterval(timer);timer=null;sessionStorage.removeItem(`room_${currentGame}`);session=null;if(leaving){try{await rpc('leave_room',{p_room_code:leaving.roomCode,p_player_token:leaving.playerToken});}catch{}}const view=document.querySelector('#room-view');if(view){view.innerHTML=entry(currentGame);bindEntry();}}
   function escapeHTML(text){return String(text).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
   return{panel,bind};
 })();
