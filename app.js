@@ -7,6 +7,30 @@ const mysteryCards = [
   {image:'assets/mystery/red-eye-ring.png', alt:'红色眼球戒指'}
 ];
 
+const ghostSoloCards = [
+  ['幽灵伪装','「小幽灵」偷偷披上了「白色小猫」的外衣，试图躲过你的追捕。当你听到「小幽灵」时，需要对「白色小猫」作出相应动作。','小幽灵也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['南瓜变身','「万圣南瓜」中了神秘的变身魔法，伪装成了「猫头鹰」。当你听到「万圣南瓜」时，需要对「猫头鹰」作出相应动作。','猫头鹰也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['黑猫替身','「黑色小猫」被施加了诅咒，与「邪恶小熊」发生了身份错乱。当你听到「黑色小猫」时，需要对「邪恶小熊」作出相应动作。','你也受到神秘魔法的影响，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['乌鸦幻影','「乌鸦」在午夜施展了幻影魔法，把自己的身影藏进了「蝙蝠」之中。当你听到「乌鸦」时，需要对「蝙蝠」作出相应动作。','「乌鸦」也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['恶魔魔法','「小恶魔」偷偷喝下了女巫的变形药水，变成了「万圣南瓜」的模样。当你听到「小恶魔」时，需要对「万圣南瓜」作出相应动作。','「小恶魔」也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['蝙蝠迷踪','「蝙蝠」被黑夜魔法迷惑，变成了「乌鸦」的模样。当你听到「蝙蝠」时，需要对「乌鸦」作出相应动作。','「蝙蝠」也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['小熊诅咒','「邪恶小熊」中了女巫的诅咒，躲进了「黑色小猫」的身份里。当你听到「邪恶小熊」时，需要对「黑色小猫」作出相应动作。','女巫也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['白猫幻术','「白色小猫」被神秘力量附身，伪装成了「小幽灵」。当你听到「白色小猫」时，需要对「小幽灵」作出相应动作。','「白色小猫」也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['猫头鹰魔咒','「猫头鹰」被施加了午夜魔咒，失去了原本的模样，变成了「小恶魔」。当你听到「猫头鹰」时，需要对「小恶魔」作出相应动作。','「小恶魔」也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['幽灵变身','「小幽灵」偷偷学会了变身术，化作了「猫头鹰」，混在其他玩偶之中。当你听到「小幽灵」时，需要对「猫头鹰」作出相应动作。','「小幽灵」也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['南瓜迷雾','「万圣南瓜」在午夜迷雾中消失了踪影，却留下了一只「黑色小猫」作为替身。当你听到「万圣南瓜」时，需要对「黑色小猫」作出相应动作。','「万圣南瓜」也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['黑猫幻象','「黑色小猫」中了幻象魔法，所有人听到它的名字时，真正需要寻找的却是「乌鸦」。当你听到「黑色小猫」时，需要对「乌鸦」作出相应动作。','女巫也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['恶魔替身','「小恶魔」为了逃避追捕，找来了「邪恶小熊」替自己接受所有指令。当你听到「小恶魔」时，需要对「邪恶小熊」作出相应动作。','「小恶魔」也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['蝙蝠伪装','「蝙蝠」施展了伪装魔法，悄悄混进了「白色小猫」的身份里。当你听到「蝙蝠」时，需要对「白色小猫」作出相应动作。','「蝙蝠」也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。'],
+  ['午夜乌鸦','午夜钟声响起，「乌鸦」被小幽灵的力量附身，化作了「小幽灵」。当你听到「乌鸦」时，需要对「小幽灵」作出相应动作。','「小幽灵」也为你施加了魔法，听到「Thriller!」时，需要迅速击掌并欢呼。']
+];
+
+const ghostTeamCards = [
+  ['双人抓鬼大作战——抓鬼','听到「抓鬼」时，两人同时用单手按住各自最喜欢的玩偶，且不能选择同一个。','听到「Thriller!」时，玩家 A 和 B 必须迅速击掌并欢呼。'],
+  ['双人抓鬼大作战——万圣节','听到「万圣节」时，玩家 A 和 B 必须迅速交换位置。','听到「Thriller!」时，玩家 A 和 B 必须迅速击掌并欢呼。'],
+  ['双人抓鬼大作战——反向','听到「反向」时，玩家需要执行与指令相反的动作。','听到「Thriller!」时，玩家 A 和 B 必须迅速击掌并欢呼。']
+];
+
 const games = {
   mystery: {
     no:'01', icon:'◉', theme:'violet', en:'MYSTERY BOX', title:'恐怖箱', accent:'#a675ff',
@@ -138,7 +162,8 @@ function page(key){
   const recap=isInfo?'':`<section class="recap"><div><p class="eyebrow">RULES, ALWAYS HERE</p><h2>需要再看一眼？</h2><p>游戏过程中，随时可以回来查看规则。</p></div><button class="secondary" id="review-rules-2">回顾规则</button></section>`;
   const roomPanel=window.RoomUI?.panel?.(key)||'';
   const mysteryDraw=key==='mystery'?`<section class="mystery-draw is-hidden" id="mystery-draw" aria-live="polite"><div class="mystery-draw-head"><p class="eyebrow">YOUR MISSION</p><h2>本轮题卡</h2></div><div id="mystery-card-shell"></div></section>`:'';
-  app.innerHTML=`<section class="game-hero ${isInfo?'info-hero':''}" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no}｜${g.en}</p><h1>${g.title}</h1>${heroActions}</section>${inlineRules}${choices}${mysteryDraw}${roomPanel}${recap}`;
+  const ghostDraw=key==='ghost'?`<section class="ghost-draw is-hidden" id="ghost-draw" aria-live="polite"><div class="ghost-draw-head"><p class="eyebrow">SPECIAL RULE</p><h2>本轮特殊规则卡</h2></div><div id="ghost-card-shell"></div></section>`:'';
+  app.innerHTML=`<section class="game-hero ${isInfo?'info-hero':''}" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no}｜${g.en}</p><h1>${g.title}</h1>${heroActions}</section>${inlineRules}${choices}${mysteryDraw}${ghostDraw}${roomPanel}${recap}`;
   document.documentElement.style.setProperty('--page-accent',g.accent); bindPage(g,key); window.RoomUI?.bind?.(key); window.scrollTo(0,0);
   if(!isInfo&&!visited.has(key)){visited.add(key);setTimeout(()=>openRules(g),180);}
 }
@@ -153,7 +178,15 @@ function drawMysteryCard(mode){
   shell.innerHTML=`<article class="mystery-task-card"><div class="mystery-card-meta"><span>MISSION ${String(index+1).padStart(2,'0')}</span><small>${mode||'随机任务 / Random Mission'}</small></div><div class="mystery-card-copy"><strong>你的目标是找到以下物品</strong><b>Your goal is to find the following item</b></div><div class="mystery-object-stage"><div class="mystery-glow"></div><img class="${card.kind==='photo'?'is-photo':''}" src="${card.image}" alt="${card.alt}"></div><div class="mystery-card-actions"><button class="primary" id="draw-again">换一张题卡 · Draw another</button><button class="secondary" id="card-review">回顾规则</button></div></article>`;
   document.querySelector('#draw-again')?.addEventListener('click',()=>drawMysteryCard(mode));document.querySelector('#card-review')?.addEventListener('click',()=>openRules(games.mystery));section.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function bindPage(g,key){document.querySelector('#review-rules')?.addEventListener('click',()=>openRules(g));document.querySelector('#review-rules-2')?.addEventListener('click',()=>openRules(g));document.querySelector('#start-challenge')?.addEventListener('click',()=>document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#open-room')?.addEventListener('click',()=>document.querySelector('#room-panel')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#draw-card')?.addEventListener('click',()=>showToast('题卡正在准备中，下一阶段即可随机抽取 ✦'));document.querySelectorAll('.choice:not([data-room])').forEach(button=>button.addEventListener('click',()=>key==='mystery'?drawMysteryCard(button.dataset.choice):showToast(`已选择「${button.dataset.choice}」· 题卡功能即将加入`)));}
+function drawGhostCard(mode){
+  const team=mode.includes('双人');const cards=team?ghostTeamCards:ghostSoloCards;
+  const section=document.querySelector('#ghost-draw');const shell=document.querySelector('#ghost-card-shell');if(!section||!shell)return;
+  const last=Number(section.dataset.last??-1);let index=Math.floor(Math.random()*cards.length);if(cards.length>1&&index===last)index=(index+1)%cards.length;section.dataset.last=index;
+  const card=cards[index];section.classList.remove('is-hidden');
+  shell.innerHTML=`<article class="ghost-task-card ${team?'team-card':'solo-card'}"><div class="ghost-card-index"><span>CARD ${String(index+1).padStart(2,'0')}</span><small>${mode}</small></div><div class="ghost-sigil">${team?'✣ ✣':'✣'}</div><p class="ghost-label">特殊规则 · SPECIAL RULE</p><h3>${card[0]}</h3><div class="ghost-rule-main">${card[1]}</div><div class="ghost-thriller"><small>THRILLER!</small><strong>${card[2]}</strong></div><div class="ghost-card-actions"><button class="primary" id="ghost-draw-again">换一张题卡</button><button class="secondary" id="ghost-card-review">回顾规则</button></div></article>`;
+  document.querySelector('#ghost-draw-again')?.addEventListener('click',()=>drawGhostCard(mode));document.querySelector('#ghost-card-review')?.addEventListener('click',()=>openRules(games.ghost));section.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function bindPage(g,key){document.querySelector('#review-rules')?.addEventListener('click',()=>openRules(g));document.querySelector('#review-rules-2')?.addEventListener('click',()=>openRules(g));document.querySelector('#start-challenge')?.addEventListener('click',()=>document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#open-room')?.addEventListener('click',()=>document.querySelector('#room-panel')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#draw-card')?.addEventListener('click',()=>showToast('题卡正在准备中，下一阶段即可随机抽取 ✦'));document.querySelectorAll('.choice:not([data-room])').forEach(button=>button.addEventListener('click',()=>key==='mystery'?drawMysteryCard(button.dataset.choice):key==='ghost'?drawGhostCard(button.dataset.choice):showToast(`已选择「${button.dataset.choice}」· 题卡功能即将加入`)));}
 
 modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeRules));
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeRules();});
