@@ -1,3 +1,4 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 create extension if not exists pgcrypto;
 
 create table if not exists public.game_rooms (
@@ -110,5 +111,20 @@ begin
   return jsonb_build_object('ok',true);
 end $$;
 
-revoke all on function public.create_room(text,text,uuid),public.join_room(text,text,uuid),public.get_room_state(text,uuid),public.start_among_game(text,uuid),public.draw_defence_card(text,uuid) from public;
-grant execute on function public.create_room(text,text,uuid),public.join_room(text,text,uuid),public.get_room_state(text,uuid),public.start_among_game(text,uuid),public.draw_defence_card(text,uuid) to anon,authenticated;
+create or replace function public.leave_room(p_room_code text,p_player_token uuid)
+returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
+declare v_room game_rooms; v_me game_players; v_remaining int;
+begin
+  select * into v_room from game_rooms where room_code=upper(trim(p_room_code)) for update;
+  if not found then return jsonb_build_object('ok',true); end if;
+  select * into v_me from game_players where room_id=v_room.id and player_token=p_player_token;
+  if not found then return jsonb_build_object('ok',true); end if;
+  delete from game_players where id=v_me.id;
+  select count(*) into v_remaining from game_players where room_id=v_room.id;
+  if v_remaining=0 then delete from game_rooms where id=v_room.id;
+  elsif v_me.is_host then update game_players set is_host=true where id=(select id from game_players where room_id=v_room.id order by joined_at limit 1); end if;
+  return jsonb_build_object('ok',true);
+end $$;
+
+revoke all on function public.create_room(text,text,uuid),public.join_room(text,text,uuid),public.get_room_state(text,uuid),public.start_among_game(text,uuid),public.draw_defence_card(text,uuid),public.leave_room(text,uuid) from public;
+grant execute on function public.create_room(text,text,uuid),public.join_room(text,text,uuid),public.get_room_state(text,uuid),public.start_among_game(text,uuid),public.draw_defence_card(text,uuid),public.leave_room(text,uuid) to anon,authenticated;
