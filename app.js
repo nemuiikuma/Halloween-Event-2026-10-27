@@ -123,21 +123,22 @@ function rulesHTML(g){return `<div class="rule-kicker">${g.no}｜${g.title} ${g.
 function page(key){
   const g=games[key]; if(!g){home();return;}
   document.title=`${g.title}｜After Midnight`; app.className=`game-page theme-${g.theme}`;
-  const choices=g.choices.length?`<section class="choice-section" id="challenge-options"><p class="eyebrow">CHOOSE YOUR CHALLENGE</p><div class="choice-head"><h2>选择挑战</h2><span>阅读规则后，从这里开始</span></div><div class="choices">${g.choices.map((name,i)=>`<button class="choice" data-choice="${name}"><small>0${i+1}</small><h3>${name}</h3>${g.choiceDetails?.[i]?`<p class="choice-detail">${g.choiceDetails[i]}</p>`:''}<b>选择这个挑战 →</b></button>`).join('')}</div></section>`:'';
+  const choices=g.choices.length?`<section class="choice-section" id="challenge-options"><p class="eyebrow">CHOOSE YOUR CHALLENGE</p><div class="choice-head"><h2>选择挑战</h2><span>阅读规则后，从这里开始</span></div><div class="choices">${g.choices.map((name,i)=>`<button class="choice" data-choice="${name}" ${key==='letters'&&i===1?'data-room="defence"':''}><small>0${i+1}</small><h3>${name}</h3>${g.choiceDetails?.[i]?`<p class="choice-detail">${g.choiceDetails[i]}</p>`:''}<b>选择这个挑战 →</b></button>`).join('')}</div></section>`:'';
   const isInfo=key==='rewards'||key==='diy';
-  const actionButton=key==='mystery'||key==='ghost'?'<button class="secondary" id="start-challenge">开始挑战 <span>↓</span></button>':Number(g.no)<=5?'<button class="secondary" id="draw-card">随机抽取题卡 <span>↗</span></button>':'';
+  const actionButton=key==='mystery'||key==='ghost'?'<button class="secondary" id="start-challenge">开始挑战 <span>↓</span></button>':key==='among'?'<button class="secondary" id="open-room">在线组队 <span>↓</span></button>':Number(g.no)<=5?'<button class="secondary" id="draw-card">随机抽取题卡 <span>↗</span></button>':'';
   const heroActions=isInfo?'':`<div class="actions"><button class="primary" id="review-rules">查看完整规则</button>${actionButton}</div>`;
   const inlineRules=isInfo?`<section class="inline-rules"><div class="rule-kicker">${g.no}｜${g.title} ${g.en}</div><div class="rule-copy">${g.rules}</div></section>`:'';
   const recap=isInfo?'':`<section class="recap"><div><p class="eyebrow">RULES, ALWAYS HERE</p><h2>需要再看一眼？</h2><p>游戏过程中，随时可以回来查看规则。</p></div><button class="secondary" id="review-rules-2">回顾规则</button></section>`;
-  app.innerHTML=`<section class="game-hero ${isInfo?'info-hero':''}" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no}｜${g.en}</p><h1>${g.title}</h1>${heroActions}</section>${inlineRules}${choices}${recap}`;
-  document.documentElement.style.setProperty('--page-accent',g.accent); bindPage(g); window.scrollTo(0,0);
+  const roomPanel=RoomUI.panel(key);
+  app.innerHTML=`<section class="game-hero ${isInfo?'info-hero':''}" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no}｜${g.en}</p><h1>${g.title}</h1>${heroActions}</section>${inlineRules}${choices}${roomPanel}${recap}`;
+  document.documentElement.style.setProperty('--page-accent',g.accent); bindPage(g,key); RoomUI.bind(key); window.scrollTo(0,0);
   if(!isInfo&&!visited.has(key)){visited.add(key);setTimeout(()=>openRules(g),180);}
 }
 
 function openRules(g){ruleContent.innerHTML=rulesHTML(g);modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('locked');ruleContent.querySelector('[data-close]').addEventListener('click',closeRules);}
 function closeRules(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('locked');}
 function showToast(message){toast.textContent=message;toast.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>toast.classList.remove('show'),2400);}
-function bindPage(g){document.querySelector('#review-rules')?.addEventListener('click',()=>openRules(g));document.querySelector('#review-rules-2')?.addEventListener('click',()=>openRules(g));document.querySelector('#start-challenge')?.addEventListener('click',()=>document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#draw-card')?.addEventListener('click',()=>showToast(g.no==='03'?'特殊规则卡正在准备中，下一阶段即可随机抽取 ✦':'题卡正在准备中，下一阶段即可随机抽取 ✦'));document.querySelectorAll('.choice').forEach(button=>button.addEventListener('click',()=>showToast(`已选择「${button.dataset.choice}」· 题卡功能即将加入`)));}
+function bindPage(g,key){document.querySelector('#review-rules')?.addEventListener('click',()=>openRules(g));document.querySelector('#review-rules-2')?.addEventListener('click',()=>openRules(g));document.querySelector('#start-challenge')?.addEventListener('click',()=>document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#open-room')?.addEventListener('click',()=>document.querySelector('#room-panel')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#draw-card')?.addEventListener('click',()=>showToast('题卡正在准备中，下一阶段即可随机抽取 ✦'));document.querySelectorAll('.choice:not([data-room])').forEach(button=>button.addEventListener('click',()=>showToast(`已选择「${button.dataset.choice}」· 题卡功能即将加入`)));}
 
 modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeRules));
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeRules();});
