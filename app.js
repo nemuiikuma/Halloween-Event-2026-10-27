@@ -1,4 +1,3 @@
-/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 const PERSONALITY_URL = 'https://nemuiikuma.github.io/Halloween/';
 
 const mysteryCards = [
