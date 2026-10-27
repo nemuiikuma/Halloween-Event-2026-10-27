@@ -129,9 +129,9 @@ function page(key){
   const heroActions=isInfo?'':`<div class="actions"><button class="primary" id="review-rules">查看完整规则</button>${actionButton}</div>`;
   const inlineRules=isInfo?`<section class="inline-rules"><div class="rule-kicker">${g.no}｜${g.title} ${g.en}</div><div class="rule-copy">${g.rules}</div></section>`:'';
   const recap=isInfo?'':`<section class="recap"><div><p class="eyebrow">RULES, ALWAYS HERE</p><h2>需要再看一眼？</h2><p>游戏过程中，随时可以回来查看规则。</p></div><button class="secondary" id="review-rules-2">回顾规则</button></section>`;
-  const roomPanel=RoomUI.panel(key);
+  const roomPanel=window.RoomUI?.panel?.(key)||'';
   app.innerHTML=`<section class="game-hero ${isInfo?'info-hero':''}" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no}｜${g.en}</p><h1>${g.title}</h1>${heroActions}</section>${inlineRules}${choices}${roomPanel}${recap}`;
-  document.documentElement.style.setProperty('--page-accent',g.accent); bindPage(g,key); RoomUI.bind(key); window.scrollTo(0,0);
+  document.documentElement.style.setProperty('--page-accent',g.accent); bindPage(g,key); window.RoomUI?.bind?.(key); window.scrollTo(0,0);
   if(!isInfo&&!visited.has(key)){visited.add(key);setTimeout(()=>openRules(g),180);}
 }
 
@@ -142,5 +142,5 @@ function bindPage(g,key){document.querySelector('#review-rules')?.addEventListen
 
 modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeRules));
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeRules();});
-function route(){const key=location.hash.replace(/^#\/?/,'').split('/')[0];key?page(key):home();}
+function route(){closeRules();const key=location.hash.replace(/^#\/?/,'').split('/')[0];key?page(key):home();}
 window.addEventListener('hashchange',route); route();
