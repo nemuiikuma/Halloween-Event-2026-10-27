@@ -1,5 +1,4 @@
-/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
-const RoomUI=(()=>{
+window.RoomUI=(()=>{
   const SUPABASE_URL='https://rukxdhojmnrcbxbjrzsn.supabase.co';
   const SUPABASE_KEY='sb_publishable_hRMfYZTp6WYHp6ddDCR6Mw_1iFdqhJ4';
   let timer=null,currentGame=null,session=null;
