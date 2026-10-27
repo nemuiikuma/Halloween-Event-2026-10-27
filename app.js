@@ -114,7 +114,7 @@ function card(key){
 
 function home(){
   document.title='After Midnight｜午夜之后'; app.className='';
-  app.innerHTML=`<section class="hero"><div class="eyebrow">HALLOWEEN LIMITED-TIME CHALLENGE</div><h1>AFTER<br><em>MIDNIGHT</em></h1><div class="intro"><p>万圣节限时挑战</p><span>城市陷入沉睡，午夜之后，熟悉的规则开始失效，有什么危险的东西即将苏醒…...</span></div><a class="scroll" href="#games">探索活动 <b>↓</b></a></section><section class="games" id="games"><div class="section-head"><p>CHOOSE YOUR ADVENTURE</p><h2>午夜之后</h2><span>01 — 08</span></div><div class="grid">${order.map(card).join('')}</div></section>`;
+  app.innerHTML=`<section class="hero"><div class="eyebrow">HALLOWEEN LIMITED-TIME CHALLENGE</div><h1>AFTER<br><em>MIDNIGHT</em></h1><div class="hero-cn">午夜之后</div><div class="intro"><p>万圣节限时挑战</p><span>城市陷入沉睡，午夜之后，熟悉的规则开始失效，有什么危险的东西即将苏醒…...</span></div><a class="scroll" href="#games">探索活动 <b>↓</b></a></section><section class="games" id="games"><div class="section-head"><p>CHOOSE YOUR ADVENTURE</p><h2>午夜之后</h2><span>01 — 08</span></div><div class="grid">${order.map(card).join('')}</div></section>`;
   window.scrollTo(0,0);
 }
 
