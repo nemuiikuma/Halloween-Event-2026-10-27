@@ -1,10 +1,11 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 const PERSONALITY_URL = 'https://nemuiikuma.github.io/Halloween/';
 
 const mysteryCards = [
-  {image:'assets/mystery/diamond.png', alt:'水滴形宝石'},
-  {image:'assets/mystery/pocket-watch.png', alt:'古董怀表', kind:'photo'},
-  {image:'assets/mystery/blue-eye-ring-cutout.png', alt:'蓝色眼球戒指'},
-  {image:'assets/mystery/red-eye-ring-cutout.png', alt:'红色眼球戒指'}
+  {image:'assets/mystery/diamond.webp', alt:'水滴形宝石'},
+  {image:'assets/mystery/pocket-watch-cutout.webp', alt:'古董怀表'},
+  {image:'assets/mystery/blue-eye-ring-cutout.webp', alt:'蓝色眼球戒指'},
+  {image:'assets/mystery/red-eye-ring-cutout.webp', alt:'红色眼球戒指'}
 ];
 
 const games = {
