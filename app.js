@@ -1,5 +1,12 @@
 const PERSONALITY_URL = 'https://nemuiikuma.github.io/Halloween/';
 
+const mysteryCards = [
+  {image:'assets/mystery/diamond.png', alt:'水滴形宝石'},
+  {image:'assets/mystery/pocket-watch.png', alt:'古董怀表', kind:'photo'},
+  {image:'assets/mystery/blue-eye-ring-cutout.png', alt:'蓝色眼球戒指'},
+  {image:'assets/mystery/red-eye-ring-cutout.png', alt:'红色眼球戒指'}
+];
+
 const games = {
   mystery: {
     no:'01', icon:'◉', theme:'violet', en:'MYSTERY BOX', title:'恐怖箱', accent:'#a675ff',
@@ -130,7 +137,8 @@ function page(key){
   const inlineRules=isInfo?`<section class="inline-rules"><div class="rule-kicker">${g.no}｜${g.title} ${g.en}</div><div class="rule-copy">${g.rules}</div></section>`:'';
   const recap=isInfo?'':`<section class="recap"><div><p class="eyebrow">RULES, ALWAYS HERE</p><h2>需要再看一眼？</h2><p>游戏过程中，随时可以回来查看规则。</p></div><button class="secondary" id="review-rules-2">回顾规则</button></section>`;
   const roomPanel=window.RoomUI?.panel?.(key)||'';
-  app.innerHTML=`<section class="game-hero ${isInfo?'info-hero':''}" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no}｜${g.en}</p><h1>${g.title}</h1>${heroActions}</section>${inlineRules}${choices}${roomPanel}${recap}`;
+  const mysteryDraw=key==='mystery'?`<section class="mystery-draw is-hidden" id="mystery-draw" aria-live="polite"><div class="mystery-draw-head"><p class="eyebrow">YOUR MISSION</p><h2>本轮题卡</h2></div><div id="mystery-card-shell"></div></section>`:'';
+  app.innerHTML=`<section class="game-hero ${isInfo?'info-hero':''}" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no}｜${g.en}</p><h1>${g.title}</h1>${heroActions}</section>${inlineRules}${choices}${mysteryDraw}${roomPanel}${recap}`;
   document.documentElement.style.setProperty('--page-accent',g.accent); bindPage(g,key); window.RoomUI?.bind?.(key); window.scrollTo(0,0);
   if(!isInfo&&!visited.has(key)){visited.add(key);setTimeout(()=>openRules(g),180);}
 }
@@ -138,7 +146,14 @@ function page(key){
 function openRules(g){ruleContent.innerHTML=rulesHTML(g);modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('locked');ruleContent.querySelector('[data-close]').addEventListener('click',closeRules);}
 function closeRules(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('locked');}
 function showToast(message){toast.textContent=message;toast.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>toast.classList.remove('show'),2400);}
-function bindPage(g,key){document.querySelector('#review-rules')?.addEventListener('click',()=>openRules(g));document.querySelector('#review-rules-2')?.addEventListener('click',()=>openRules(g));document.querySelector('#start-challenge')?.addEventListener('click',()=>document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#open-room')?.addEventListener('click',()=>document.querySelector('#room-panel')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#draw-card')?.addEventListener('click',()=>showToast('题卡正在准备中，下一阶段即可随机抽取 ✦'));document.querySelectorAll('.choice:not([data-room])').forEach(button=>button.addEventListener('click',()=>showToast(`已选择「${button.dataset.choice}」· 题卡功能即将加入`)));}
+function drawMysteryCard(mode){
+  const section=document.querySelector('#mystery-draw');const shell=document.querySelector('#mystery-card-shell');if(!section||!shell)return;
+  const last=Number(section.dataset.last??-1);let index=Math.floor(Math.random()*mysteryCards.length);if(mysteryCards.length>1&&index===last)index=(index+1)%mysteryCards.length;section.dataset.last=index;
+  const card=mysteryCards[index];section.classList.remove('is-hidden');
+  shell.innerHTML=`<article class="mystery-task-card"><div class="mystery-card-meta"><span>MISSION ${String(index+1).padStart(2,'0')}</span><small>${mode||'随机任务 / Random Mission'}</small></div><div class="mystery-card-copy"><strong>你的目标是找到以下物品</strong><b>Your goal is to find the following item</b></div><div class="mystery-object-stage"><div class="mystery-glow"></div><img class="${card.kind==='photo'?'is-photo':''}" src="${card.image}" alt="${card.alt}"></div><div class="mystery-card-actions"><button class="primary" id="draw-again">换一张题卡 · Draw another</button><button class="secondary" id="card-review">回顾规则</button></div></article>`;
+  document.querySelector('#draw-again')?.addEventListener('click',()=>drawMysteryCard(mode));document.querySelector('#card-review')?.addEventListener('click',()=>openRules(games.mystery));section.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function bindPage(g,key){document.querySelector('#review-rules')?.addEventListener('click',()=>openRules(g));document.querySelector('#review-rules-2')?.addEventListener('click',()=>openRules(g));document.querySelector('#start-challenge')?.addEventListener('click',()=>document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#open-room')?.addEventListener('click',()=>document.querySelector('#room-panel')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#draw-card')?.addEventListener('click',()=>showToast('题卡正在准备中，下一阶段即可随机抽取 ✦'));document.querySelectorAll('.choice:not([data-room])').forEach(button=>button.addEventListener('click',()=>key==='mystery'?drawMysteryCard(button.dataset.choice):showToast(`已选择「${button.dataset.choice}」· 题卡功能即将加入`)));}
 
 modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeRules));
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeRules();});
