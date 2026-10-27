@@ -158,5 +158,5 @@ function bindPage(g,key){document.querySelector('#review-rules')?.addEventListen
 
 modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeRules));
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeRules();});
-function route(){closeRules();const key=location.hash.replace(/^#\/?/,'').split('/')[0];key?page(key):home();}
+function route(){closeRules();let path=location.hash;if(path.startsWith('#/'))path=path.slice(2);else if(path.startsWith('#'))path=path.slice(1);const key=path.split('/')[0];key?page(key):home();}
 window.addEventListener('hashchange',route); route();
