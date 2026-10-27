@@ -12,4 +12,8 @@
 .intro{max-width:760px}
 .intro span{display:block;line-height:1.8}
 .c6{--accent:#ffd45c}.c7{--accent:#75f0bd}.c8{--accent:#c4a1ff}
+.inline-rules{width:min(900px,88vw);margin:80px auto 30px;padding:clamp(28px,5vw,64px);background:#f2eee5;color:#17131b;box-shadow:14px 14px 0 color-mix(in srgb,var(--page-accent) 45%,#211927)}
+.inline-rules .rule-kicker{margin-bottom:26px}
+.info-hero{min-height:52svh}
+.choice-detail{color:#d8d1db!important;font-size:12px!important;line-height:1.75!important;margin-top:14px!important}
 @media(max-width:760px){.hero h1{font-size:16vw;margin-top:13vh}.hero h1 em{margin-left:0}.hero-cn{margin-left:0;font-size:20px}.rule-copy h3{font-size:17px}.rule-copy{font-size:13px}}
