@@ -77,12 +77,12 @@ const games = {
       <h3>集章兑奖｜Stamp & Redeem</h3>
       <p>参与现场小游戏，完成挑战即可获得对应印章！</p>
       <ul class="rule-list"><li><strong>1–3个印章：</strong> 兑换基础奖品</li><li><strong>4个及以上不同印章：</strong> 兑换进阶奖品，并获得1次Lucky Draw 抽奖机会</li><li><strong>完成全部游戏：</strong> 获得特别奖品及1次Lucky Draw 抽奖机会</li></ul>
+      <p><strong>温馨提示：</strong> 每人使用一张集章卡，请妥善保管，凭卡兑换奖品喔～</p>
       <h3>幸运抽奖｜Lucky Draw</h3>
       <p>集齐<strong>4个不同摊位的印章</strong>，即可参与一次幸运抽奖！</p>
       <p>获得额外4枚印章，即可获得再次抽奖的机会哦</p>
       <h3>万圣节人格测试｜Halloween Identity Test</h3>
-      <p>完成现场趣味测试，解锁你的万圣节隐藏身份！</p>
-      <p><strong>温馨提示：</strong> 每人使用一张集章卡，请妥善保管，凭卡兑换奖品喔～</p>`
+      <p>完成现场趣味测试，解锁你的万圣节隐藏身份！</p>`
   },
   diy: {
     no:'07', icon:'✂', theme:'mint', en:'HALLOWEEN DIY WORKSHOP', title:'万圣节DIY', accent:'#75f0bd',
@@ -125,7 +125,7 @@ function page(key){
   document.title=`${g.title}｜After Midnight`; app.className=`game-page theme-${g.theme}`;
   const choices=g.choices.length?`<section class="choice-section" id="challenge-options"><p class="eyebrow">CHOOSE YOUR CHALLENGE</p><div class="choice-head"><h2>选择挑战</h2><span>阅读规则后，从这里开始</span></div><div class="choices">${g.choices.map((name,i)=>`<button class="choice" data-choice="${name}"><small>0${i+1}</small><h3>${name}</h3>${g.choiceDetails?.[i]?`<p class="choice-detail">${g.choiceDetails[i]}</p>`:''}<b>选择这个挑战 →</b></button>`).join('')}</div></section>`:'';
   const isInfo=key==='rewards'||key==='diy';
-  const actionButton=key==='mystery'?'<button class="secondary" id="start-challenge">开始挑战 <span>↓</span></button>':key==='ghost'?'<button class="secondary" id="draw-card">随机抽取特殊规则卡 <span>↗</span></button>':Number(g.no)<=5?'<button class="secondary" id="draw-card">随机抽取题卡 <span>↗</span></button>':'';
+  const actionButton=key==='mystery'||key==='ghost'?'<button class="secondary" id="start-challenge">开始挑战 <span>↓</span></button>':Number(g.no)<=5?'<button class="secondary" id="draw-card">随机抽取题卡 <span>↗</span></button>':'';
   const heroActions=isInfo?'':`<div class="actions"><button class="primary" id="review-rules">查看完整规则</button>${actionButton}</div>`;
   const inlineRules=isInfo?`<section class="inline-rules"><div class="rule-kicker">${g.no}｜${g.title} ${g.en}</div><div class="rule-copy">${g.rules}</div></section>`:'';
   const recap=isInfo?'':`<section class="recap"><div><p class="eyebrow">RULES, ALWAYS HERE</p><h2>需要再看一眼？</h2><p>游戏过程中，随时可以回来查看规则。</p></div><button class="secondary" id="review-rules-2">回顾规则</button></section>`;
