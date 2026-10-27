@@ -1,0 +1,14 @@
+.rule-sheet h2{line-height:1}
+.rule-sheet h2 em{display:block;font-size:.42em;line-height:1.2;margin-top:8px;letter-spacing:.03em}
+.rule-copy{font-size:14px;line-height:1.82}
+.rule-copy h3{margin:32px 0 10px;padding-top:16px;border-top:1px solid #cec6cb;font-size:19px;line-height:1.35;color:#211924}
+.rule-copy h3:first-child{margin-top:8px}
+.rule-copy p{color:#4e4651;margin:10px 0}
+.rule-copy strong{color:#17131b}
+.rule-copy .rule-intro{font-size:16px;color:#211924;margin-bottom:30px}
+.hero h1{font-size:clamp(64px,11vw,150px);letter-spacing:-.075em}
+.hero h1 em{margin-left:4vw}
+.intro{max-width:760px}
+.intro span{display:block;line-height:1.8}
+.c6{--accent:#ffd45c}.c7{--accent:#75f0bd}.c8{--accent:#c4a1ff}
+@media(max-width:760px){.hero h1{font-size:16vw;margin-top:13vh}.hero h1 em{margin-left:0}.rule-copy h3{font-size:17px}.rule-copy{font-size:13px}}
