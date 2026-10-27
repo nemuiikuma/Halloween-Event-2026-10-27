@@ -2,149 +2,139 @@ const PERSONALITY_URL = 'https://nemuiikuma.github.io/Halloween/';
 
 const games = {
   mystery: {
-    no:'01', icon:'◉', theme:'violet', en:'MYSTERY BOX', title:'恐怖箱',
-    tagline:'别相信眼睛。今晚，触觉才是唯一线索。',
-    intro:'珍贵的宝物藏在黑暗的箱子里。你敢把手伸进去，只凭触感把它找出来吗？',
-    meta:['1–2 人','60–90 秒','触觉挑战'],
-    modes:[
-      {name:'单人模式', tag:'SOLO', text:'抽取任务卡后，把手伸进箱子，仅凭触觉寻找目标物品。限时 60 秒。'},
-      {name:'双人协作', tag:'TEAM', text:'观察者可以看，但只能描述位置、形状和大小；探索者只能用手寻找。说出物品名称即挑战失败，限时 90 秒。'}
-    ],
-    win:'在时限内找到任务卡指定的物品，即为挑战成功。',
-    accent:'#a675ff'
+    no:'01', icon:'◉', theme:'violet', en:'MYSTERY BOX', title:'恐怖箱', accent:'#a675ff',
+    cardText:'在未知的触感中，找回这些失落的宝物。',
+    choices:['单人挑战 / Solo Challenge','双人合作 / Team Challenge'],
+    rules:`
+      <p class="rule-intro">午夜之后，一批珍贵的宝物被藏进了神秘箱子。传说中的宝石、古老的怀表……你敢伸出手，在未知的触感中找回这些失落的宝物吗？</p>
+      <h3>单人挑战 / Solo Challenge</h3>
+      <ul class="rule-list"><li>随机抽取一张任务卡，确认需要寻找的宝物。</li><li>依将手伸入神秘箱子，通过触摸寻找你的目标。</li><li>在<strong>60秒内</strong>成功找到并取出指定宝物，即挑战成功。</li></ul>
+      <h3>双人合作 / Team Challenge</h3>
+      <p>两人分别担任“观察者”和“探索者”。</p>
+      <ul class="rule-list"><li><strong>观察者：</strong>可以看到箱内情况，但不能直接说出目标宝物的名称，只能通过位置、形状、大小等线索引导队友。</li><li><strong>探索者：</strong>根据队友的提示，在未知的触感中找到正确的宝物。</li><li>在 <strong>90秒内</strong> 成功取出指定宝物，即挑战成功。</li></ul>
+      <p>观察者如果不小心说出了目标宝物的名称，本轮挑战将直接失败，小心不要说漏嘴哦～</p>`
   },
   among: {
-    no:'02', icon:'⌁', theme:'red', en:"IT'S AMONG US", title:'它在我们之中',
-    tagline:'每个人都很正常——至少看起来如此。',
-    intro:'你们之中有一位“被附身者”。听回答、看动作、抓住那一点不自然。',
-    meta:['3–5 人','约 3–5 分钟','推理游戏'],
-    steps:[
-      ['抽取身份','随机领取身份卡：1 人是被附身者，其余为人类。'],
-      ['秘密行动','被附身者需暗中完成身份卡上的秘密规则，同时隐藏异常。'],
-      ['轮流问答','工作人员提出 3–5 个问题，所有人依次回答。人类观察措辞、动作与反应。'],
-      ['讨论投票','短暂讨论后投票，选出你认为的被附身者。']
-    ],
-    win:'人类找出被附身者则人类获胜；若被附身者完成全部秘密规则且未被识破，则被附身者获胜。',
-    accent:'#ff6a55'
+    no:'02', icon:'⌁', theme:'red', en:"IT'S AMONG US", title:'它在我们之中', accent:'#ff6a55',
+    cardText:'有什么东西悄悄混进了人群。',
+    choices:[],
+    rules:`
+      <p class="rule-intro">午夜之后，有什么东西悄悄混进了人群。它看起来和普通人没什么两样，但一些不经意的小动作，可能会暴露它的真实身份……</p>
+      <p>每轮由 <strong>3–5名玩家</strong> 参与，随机领取身份卡，其中1人为“被附身者”，其余为“人类”。</p>
+      <ul class="rule-list"><li><strong>被附身者：</strong> 你的身份卡上藏着一条秘密规则。回答问题时必须严格遵守，同时想办法隐藏自己的异常行为，千万别露出破绽。</li><li><strong>人类：</strong> 工作人员将依次提出3–5个问题，所有玩家轮流回答。仔细观察身边的人，留意那些奇怪的用词、动作和反应。</li></ul>
+      <p>问答结束后，进入最终指认环节。讨论并投票，看看能否找出隐藏在人群中的“被附身者”。</p>
+      <h3>获胜条件｜How to Win</h3>
+      <p><strong>人类阵营：</strong> 成功找出真正的“被附身者”，即获胜。</p>
+      <p><strong>被附身者：</strong> 完成全部秘密规则，且没有被任何“人类”玩家识破，即获胜。</p>
+      <p><strong>游戏时长： 约3–5分钟</strong></p>`
   },
   ghost: {
-    no:'03', icon:'✣', theme:'acid', en:'GHOSTBUSTERS', title:'去抓鬼！',
-    tagline:'听清指令，遵守禁忌，别让手比脑子更快。',
-    intro:'按照工作人员的口令操作桌上的万圣节玩具。但在开始前，你会先获得一条必须遵守的特殊规则。',
-    meta:['1–2 人','60 秒','反应挑战'],
-    rules:['特殊规则可能是“只能使用左手”“不能触碰某件玩具”，或听到特定关键词时必须反向行动。','指令会逐渐加快。只有同时完成口令并遵守特殊规则，才算一次有效指令。'],
-    modes:[
-      {name:'单人模式', tag:'SOLO', text:'60 秒内完成至少 5 条有效指令，错误不超过 2 次。'},
-      {name:'双人协作', tag:'TEAM', text:'60 秒内共同完成至少 5 条指令，两人累计错误不超过 4 次。'}
-    ],
-    accent:'#d8ff69'
+    no:'03', icon:'✣', theme:'acid', en:'GHOSTBUSTERS', title:'去抓鬼！', accent:'#d8ff69',
+    cardText:'鬼怪们已经出动，你能跟上指令吗？',
+    choices:['单人模式','双人模式'],
+    rules:`
+      <p class="rule-intro">鬼怪们已经出动，你能跟上指令，成功抓住它们吗？</p>
+      <p>可以选择<strong>单人挑战</strong>或<strong>双人合作</strong>模式。</p>
+      <ul class="rule-list"><li>游戏开始前，先领取本轮的特殊规则，再根据工作人员发出的指令，对指定的万圣节玩偶完成相应动作。</li><li>小心那些捣乱的特殊规则：只能使用左手、禁止触碰某个玩偶，或是听到特定词语时需要反向操作……千万别被迷惑。</li><li>随着游戏进行，指令会越来越快，难度也会逐渐升级。集中注意力，别让鬼怪趁乱逃跑。</li></ul>
+      <h3>获胜条件｜How to Win</h3>
+      <p><strong>单人模式：</strong> 在60秒内正确完成至少5个有效指令，且错误次数不超过2次，即挑战成功。</p>
+      <p><strong>双人模式：</strong> 两名玩家需在60秒内合作完成至少5个有效指令，总错误次数不超过4次，即挑战成功。</p>`
   },
   midnight: {
-    no:'04', icon:'☎', theme:'cyan', en:'MIDNIGHT CALL · DARE DEVIL', title:'午夜凶铃',
-    tagline:'一通不能说破的电话，或一场不能退缩的考验。',
-    intro:'先选择你的挑战。两条路都通向胜利，也都可能通向社死现场。',
-    meta:['单人挑战','限时任务','二选一'],
-    modes:[
-      {name:'午夜凶铃', tag:'MIDNIGHT CALL', text:'抽取一个秘密关键词，打给朋友或家人，并引导对方在 90 秒内主动说出它。你不能说出关键词，也不能直接要求对方重复某句话。'},
-      {name:'魔鬼挑战', tag:'DARE DEVIL', text:'从三个限时挑战中选择一个：极速叠杯、筷子拯救眼球，或五回合“不要看那边”。完成所选挑战即可过关。'}
-    ],
-    subgames:['极速叠杯','眼球救援','不要看那边'],
-    win:'完成你选择的挑战，即为成功。具体时限与动作由现场工作人员说明。',
-    accent:'#65d7ff'
+    no:'04', icon:'☎', theme:'cyan', en:'MIDNIGHT CALL / DARE DEVIL', title:'午夜凶铃 / Dare Devil', accent:'#65d7ff',
+    cardText:'一项神秘的电话任务，或一场魔鬼的考验。',
+    choices:['Option A｜午夜凶铃 Midnight Call','Option B｜魔鬼挑战 Dare Devil'],
+    subgames:['极速叠杯｜Speed Stacks','筷子夹眼球｜Eyeball Rescue',"别看那边｜Don't Look That Way"],
+    rules:`
+      <h3>Option A｜午夜凶铃 Midnight Call</h3>
+      <p>午夜时分，一项神秘的电话任务正在等待你……</p>
+      <ul class="rule-list"><li>随机抽取一张“午夜任务卡”，解锁你的秘密关键词。</li><li>拨通一位朋友或家人的电话，想办法在聊天中引导对方说出目标词。</li><li>小心暴露任务，不能直接说出关键词，也不能要求对方重复指定词语哦！</li><li>在<strong>90秒</strong>内成功让对方说出目标词，即挑战成功。</li></ul>
+      <h3>Option B｜魔鬼挑战 Dare Devil</h3>
+      <p>不想打电话？那就接受魔鬼的考验。随机抽取一项限时挑战，看看你能否顺利过关。</p>
+      <ul class="rule-list"><li><strong>极速叠杯｜Speed Stacks：</strong>手速大考验——在倒计时结束前，按照指定要求完成杯子堆叠。</li><li><strong>筷子夹眼球｜Eyeball Rescue：</strong>散落的眼球正在等待救援——在倒计时结束前，用筷子将指定数量的“眼球”转移到另一容器吧。</li><li><strong>别看那边｜Don't Look That Way：</strong>你的直觉可能会出卖你——与工作人员面对面进行5轮方向挑战，工作人员会随机指向左侧或右侧，你需要同时转头。若转头方向与手指方向一致，则挑战失败。</li></ul>
+      <h3>获胜条件｜How to Win</h3>
+      <p>完成所选挑战，即挑战成功！</p>`
   },
   letters: {
-    no:'05', icon:'✉', theme:'pink', en:'CURSED LETTERS', title:'诅咒信件',
-    tagline:'每一封信都藏着一门课程，也藏着一次考验。',
-    intro:'选择一封诅咒信件，完成信中指定的魔法挑战。你会抽到知识、谜题，还是一杯未知药水？',
-    meta:['单人或组队','三类挑战','抽信决定'],
-    modes:[
-      {name:'魔法史', tag:'HISTORY OF MAGIC', text:'回答万圣节传说、节日文化或世界鬼怪相关问题。'},
-      {name:'黑魔法防御术', tag:'DEFENCE', text:'破解谜语、情境推理或脑筋急转弯。'},
-      {name:'魔药学', tag:'POTIONS', text:'品尝神秘饮品，并猜出其中的关键原料。'}
-    ],
-    win:'完成所选信件中的挑战，即可通关并获得盖章。涉及饮品时，如有过敏或饮食限制，请先告知工作人员。',
-    accent:'#ff6fb5'
+    no:'05', icon:'✉', theme:'pink', en:'CURSED LETTERS', title:'诅咒信件', accent:'#ff6fb5',
+    cardText:'选择一封密函，完成对应的魔法挑战。',
+    choices:['History of Magic｜魔法史','Defence Against the Dark Arts｜黑魔法防御','Potions｜魔药学'],
+    rules:`
+      <p class="rule-intro">从桌上选择一封神秘的“诅咒信件”，根据密函内容，完成对应的魔法挑战。</p>
+      <h3>History of Magic｜魔法史</h3>
+      <p>你对魔法世界了解多少？从万圣节的古老传说到世界各地的神秘鬼怪，回答魔法史知识问答，看看你是否有成为魔法学者的潜质。</p>
+      <h3>Defence Against the Dark Arts｜黑魔法防御</h3>
+      <p>黑魔法考验的不只是勇气，还有你的推理能力。破解脑筋急转弯，或与队友一起寻找情境谜题中隐藏的真相，成功解开谜团才能通过考验。</p>
+      <h3>Potions｜魔药学</h3>
+      <p>魔药课上出现了几杯配方不明的神秘饮品。发挥你的味觉侦探能力，品尝魔药并猜测其中隐藏的原料，看看你能否破解魔药配方。</p>
+      <h3>获胜条件｜How to Win</h3>
+      <p>成功完成所选密函对应的挑战，即可通关！</p>`
   },
   rewards: {
-    no:'07', icon:'★', theme:'gold', en:'REWARDS · LUCKY DRAW', title:'兑奖规则',
-    tagline:'收集印章，把今晚的冒险兑换成惊喜。',
-    intro:'完成现场游戏可以获得印章。请保管好自己的集章卡，每人限用一张。',
-    meta:['集章兑奖','幸运抽奖','每人一张卡'],
-    tiers:[
-      {count:'1–3 枚', name:'基础奖励', text:'可兑换基础奖品。'},
-      {count:'4+ 种', name:'进阶奖励', text:'完成 4 个不同游戏，可兑换进阶奖品，并获得 1 次幸运抽奖机会。'},
-      {count:'全部完成', name:'特别奖励', text:'完成全部现场游戏，可兑换特别奖品，并获得 1 次幸运抽奖机会。'},
-      {count:'每多 4 枚', name:'追加抽奖', text:'之后每额外获得 4 枚印章，可再获得 1 次幸运抽奖机会。'}
-    ],
-    rules:['完成人格测试还会解锁你的万圣节隐藏身份。','奖品数量有限，兑换方式与最终解释以现场工作人员说明为准。'],
-    accent:'#ffd45c'
+    no:'06', icon:'★', theme:'gold', en:'REWARDS & LUCKY DRAW', title:'兑奖摊位', accent:'#ffd45c',
+    cardText:'集章兑奖，解锁幸运抽奖。', choices:[],
+    rules:`
+      <h3>集章兑奖｜Stamp & Redeem</h3>
+      <p>参与现场小游戏，完成挑战即可获得对应印章！</p>
+      <ul class="rule-list"><li><strong>1–3个印章：</strong> 兑换基础奖品</li><li><strong>4个及以上不同印章：</strong> 兑换进阶奖品，并获得1次Lucky Draw 抽奖机会</li><li><strong>完成全部游戏：</strong> 获得特别奖品及1次Lucky Draw 抽奖机会</li></ul>
+      <h3>幸运抽奖｜Lucky Draw</h3>
+      <p>集齐<strong>4个不同摊位的印章</strong>，即可参与一次幸运抽奖！</p>
+      <p>获得额外4枚印章，即可获得再次抽奖的机会哦</p>
+      <h3>万圣节人格测试｜Halloween Identity Test</h3>
+      <p>完成现场趣味测试，解锁你的万圣节隐藏身份！</p>
+      <p><strong>温馨提示：</strong> 每人使用一张集章卡，请妥善保管，凭卡兑换奖品喔～</p>`
   },
   diy: {
-    no:'08', icon:'✂', theme:'mint', en:'HALLOWEEN DIY SESSION', title:'DIY Session',
-    tagline:'把今晚的怪诞灵感，做成可以带走的纪念。',
-    intro:'在指定时段参加 DIY Session，挑选一种创作，把属于你的万圣节作品带回家。',
-    meta:['指定时段','材料现场提供','创意手作'],
-    modes:[
-      {name:'南瓜装饰', tag:'PUMPKIN ART', text:'使用彩笔、贴纸与装饰材料，为南瓜设计独一无二的表情和造型。'},
-      {name:'万圣节小手作', tag:'CRAFT LAB', text:'用扭扭棒等材料制作魔法棒、发箍、发夹或其他万圣节小物。'}
-    ],
-    rules:['请按照现场时段和工作人员安排入场。','材料与席位数量有限；使用工具时请留意安全，并保持桌面整洁。'],
-    accent:'#75f0bd'
+    no:'07', icon:'✂', theme:'mint', en:'HALLOWEEN DIY WORKSHOP', title:'万圣节DIY', accent:'#75f0bd',
+    cardText:'制作南瓜雕刻 / 扭扭棒～',
+    choices:['DIY A｜南瓜灯制作 Pumpkin Decorating','DIY B｜万圣节扭扭棒创作 Halloween Crafts'],
+    rules:`
+      <p class="rule-intro"><strong>请根据预约时段来DIY Session制作南瓜雕刻/扭扭棒～</strong></p>
+      <h3>DIY A｜南瓜灯制作 Pumpkin Decorating</h3>
+      <p>万圣节到了，南瓜们也准备换上新面孔。</p>
+      <p>是露出邪恶笑容的南瓜怪，还是古灵精怪的可爱南瓜？拿起彩笔，搭配贴纸和各种装饰材料，发挥你的想象力，为南瓜设计一张独一无二的万圣节面孔吧。</p>
+      <h3>DIY B｜万圣节扭扭棒创作 Halloween Crafts</h3>
+      <p>女巫的魔杖不一定来自魔法商店，也可以出自你的双手。</p>
+      <p>用五颜六色的扭扭棒，制作充满魔法气息的女巫魔杖，或把南瓜、幽灵和蝙蝠变成可爱的发箍与发夹。快来为自己的万圣节装扮增添一点奇妙的魔法元素～</p>`
   }
 };
 
-const order=['mystery','among','ghost','midnight','letters','personality','rewards','diy'];
+const order=['mystery','among','ghost','midnight','letters','rewards','diy','personality'];
 const app=document.querySelector('#app');
 const modal=document.querySelector('#rule-modal');
 const ruleContent=document.querySelector('#rule-content');
 const toast=document.querySelector('#toast');
 const visited=new Set();
 
-function card(key,index){
-  if(key==='personality') return `<a class="card c6" href="${PERSONALITY_URL}"><span class="num">06</span><i>◈</i><div><small>PERSONALITY TEST</small><h3>万圣节人格测试</h3><p>天黑以后，哪个人格会悄悄苏醒？</p></div><b>开始测试 ↗</b></a>`;
+function card(key){
+  if(key==='personality') return `<a class="card c8" href="${PERSONALITY_URL}"><span class="num">08</span><i>◈</i><div><small>HALLOWEEN IDENTITY TEST</small><h3>万圣节人格测试</h3><p>天黑以后，哪个人格会悄悄苏醒？</p></div><b>开始测试 ↗</b></a>`;
   const g=games[key];
-  return `<a class="card c${index+1}" href="#/${key}"><span class="num">${g.no}</span><i>${g.icon}</i><div><small>${g.en}</small><h3>${g.title}</h3><p>${g.tagline}</p></div><b>${key==='rewards'||key==='diy'?'查看详情':'进入游戏'} ↗</b></a>`;
+  return `<a class="card c${Number(g.no)}" href="#/${key}"><span class="num">${g.no}</span><i>${g.icon}</i><div><small>${g.en}</small><h3>${g.title}</h3><p>${g.cardText}</p></div><b>${key==='rewards'||key==='diy'?'查看详情':'进入游戏'} ↗</b></a>`;
 }
 
 function home(){
-  document.title='万圣奇妙夜｜活动指南';
-  app.className='';
-  app.innerHTML=`<section class="hero"><div class="eyebrow">WELCOME, NIGHT CREATURES</div><h1>万圣<br><em>奇妙夜</em></h1><div class="intro"><p>八个入口，一整个怪诞夜晚。</p><span>选择一个板块，查看规则并开始你的万圣节冒险。</span></div><a class="scroll" href="#games">探索活动 <b>↓</b></a></section><section class="games" id="games"><div class="section-head"><p>CHOOSE YOUR ADVENTURE</p><h2>今晚，玩什么？</h2><span>01 — 08</span></div><div class="grid">${order.map(card).join('')}</div></section>`;
+  document.title='After Midnight｜午夜之后'; app.className='';
+  app.innerHTML=`<section class="hero"><div class="eyebrow">HALLOWEEN LIMITED-TIME CHALLENGE</div><h1>AFTER<br><em>MIDNIGHT</em></h1><div class="intro"><p>万圣节限时挑战</p><span>城市陷入沉睡，午夜之后，熟悉的规则开始失效，有什么危险的东西即将苏醒…...</span></div><a class="scroll" href="#games">探索活动 <b>↓</b></a></section><section class="games" id="games"><div class="section-head"><p>CHOOSE YOUR ADVENTURE</p><h2>午夜之后</h2><span>01 — 08</span></div><div class="grid">${order.map(card).join('')}</div></section>`;
   window.scrollTo(0,0);
 }
 
-function ruleBody(g){
-  return `${g.steps?`<ol class="steps">${g.steps.map((s,i)=>`<li><span>${String(i+1).padStart(2,'0')}</span><div><b>${s[0]}</b><p>${s[1]}</p></div></li>`).join('')}</ol>`:''}${g.rules?`<ul class="rule-list">${g.rules.map(r=>`<li>${r}</li>`).join('')}</ul>`:''}${g.modes?`<div class="mode-list">${g.modes.map(m=>`<article><small>${m.tag}</small><h3>${m.name}</h3><p>${m.text}</p></article>`).join('')}</div>`:''}${g.tiers?`<div class="tiers">${g.tiers.map(t=>`<article><strong>${t.count}</strong><div><h3>${t.name}</h3><p>${t.text}</p></div></article>`).join('')}</div>`:''}${g.win?`<div class="win"><span>通关条件</span><p>${g.win}</p></div>`:''}`;
-}
-
-function rulesHTML(g){
-  return `<div class="rule-kicker">${g.no} · ${g.en}</div><h2 id="rule-title">${g.title}<br><em>游戏规则</em></h2><p class="rule-intro">${g.intro}</p>${ruleBody(g)}<button class="primary wide" data-close>我知道了，开始挑战</button>`;
-}
+function rulesHTML(g){return `<div class="rule-kicker">${g.no}｜${g.title} ${g.en}</div><h2 id="rule-title">游戏规则<em>How to Play</em></h2><div class="rule-copy">${g.rules}</div><button class="primary wide" data-close>我知道了，开始挑战</button>`;}
 
 function page(key){
-  const g=games[key];
-  if(!g){home();return;}
-  document.title=`${g.title}｜万圣奇妙夜`;
-  app.className=`game-page theme-${g.theme}`;
-  app.innerHTML=`<section class="game-hero" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no} · ${g.en}</p><h1>${g.title}</h1><p class="tagline">${g.tagline}</p><div class="meta">${g.meta.map(m=>`<span>${m}</span>`).join('')}</div><div class="actions"><button class="primary" id="review-rules">查看完整规则</button>${key!=='rewards'&&key!=='diy'?'<button class="secondary" id="draw-card">随机抽取题卡 <span>↗</span></button>':''}</div></section>${g.modes?`<section class="choice-section"><p class="eyebrow">CHOOSE YOUR MODE</p><div class="choice-head"><h2>${key==='midnight'||key==='letters'?'选择你的挑战':'选择游戏模式'}</h2><span>规则看完后，从这里开始</span></div><div class="choices">${g.modes.map((m,i)=>`<button class="choice" data-choice="${m.name}"><small>0${i+1} / ${m.tag}</small><h3>${m.name}</h3><p>${m.text}</p><b>选择这个挑战 →</b></button>`).join('')}</div>${g.subgames?`<div class="subgames"><span>魔鬼挑战包含</span>${g.subgames.map(s=>`<i>${s}</i>`).join('')}</div>`:''}</section>`:''}<section class="recap"><div><p class="eyebrow">RULES, ALWAYS HERE</p><h2>需要再看一眼？</h2><p>规则不会消失。游戏过程中随时可以回来查看。</p></div><button class="secondary" id="review-rules-2">回顾规则</button></section>`;
-  document.documentElement.style.setProperty('--page-accent',g.accent);
-  bindPage(g,key);
-  window.scrollTo(0,0);
+  const g=games[key]; if(!g){home();return;}
+  document.title=`${g.title}｜After Midnight`; app.className=`game-page theme-${g.theme}`;
+  const choices=g.choices.length?`<section class="choice-section"><p class="eyebrow">CHOOSE YOUR CHALLENGE</p><div class="choice-head"><h2>选择挑战</h2><span>阅读规则后，从这里开始</span></div><div class="choices">${g.choices.map((name,i)=>`<button class="choice" data-choice="${name}"><small>0${i+1}</small><h3>${name}</h3><b>选择这个挑战 →</b></button>`).join('')}</div>${g.subgames?`<div class="subgames"><span>魔鬼挑战包含</span>${g.subgames.map(s=>`<i>${s}</i>`).join('')}</div>`:''}</section>`:'';
+  app.innerHTML=`<section class="game-hero" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no}｜${g.en}</p><h1>${g.title}</h1><div class="actions"><button class="primary" id="review-rules">查看完整规则</button>${Number(g.no)<=5?'<button class="secondary" id="draw-card">随机抽取题卡 <span>↗</span></button>':''}</div></section>${choices}<section class="recap"><div><p class="eyebrow">RULES, ALWAYS HERE</p><h2>需要再看一眼？</h2><p>游戏过程中，随时可以回来查看规则。</p></div><button class="secondary" id="review-rules-2">回顾规则</button></section>`;
+  document.documentElement.style.setProperty('--page-accent',g.accent); bindPage(g); window.scrollTo(0,0);
   if(!visited.has(key)){visited.add(key);setTimeout(()=>openRules(g),180);}
 }
 
 function openRules(g){ruleContent.innerHTML=rulesHTML(g);modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('locked');ruleContent.querySelector('[data-close]').addEventListener('click',closeRules);}
 function closeRules(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('locked');}
 function showToast(message){toast.textContent=message;toast.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>toast.classList.remove('show'),2400);}
-function bindPage(g,key){
-  document.querySelector('#review-rules')?.addEventListener('click',()=>openRules(g));
-  document.querySelector('#review-rules-2')?.addEventListener('click',()=>openRules(g));
-  document.querySelector('#draw-card')?.addEventListener('click',()=>showToast('题卡正在准备中，下一阶段即可随机抽取 ✦'));
-  document.querySelectorAll('.choice').forEach(button=>button.addEventListener('click',()=>showToast(`已选择「${button.dataset.choice}」· 题卡功能即将加入`)));
-}
+function bindPage(g){document.querySelector('#review-rules')?.addEventListener('click',()=>openRules(g));document.querySelector('#review-rules-2')?.addEventListener('click',()=>openRules(g));document.querySelector('#draw-card')?.addEventListener('click',()=>showToast('题卡正在准备中，下一阶段即可随机抽取 ✦'));document.querySelectorAll('.choice').forEach(button=>button.addEventListener('click',()=>showToast(`已选择「${button.dataset.choice}」· 题卡功能即将加入`)));}
 
 modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeRules));
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeRules();});
-function route(){const key=location.hash.replace(/^#\/?/,'').split('/')[0];if(key==='personality'){location.href=PERSONALITY_URL;return;}key?page(key):home();}
-window.addEventListener('hashchange',route);
-route();
+function route(){const key=location.hash.replace(/^#\/?/,'').split('/')[0];key?page(key):home();}
+window.addEventListener('hashchange',route); route();
