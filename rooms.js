@@ -1,0 +1,52 @@
+const RoomUI=(()=>{
+  const SUPABASE_URL='https://rukxdhojmnrcbxbjrzsn.supabase.co';
+  const SUPABASE_KEY='sb_publishable_hRMfYZTp6WYHp6ddDCR6Mw_1iFdqhJ4';
+  let timer=null,currentGame=null,session=null;
+
+  const gameType=key=>key==='among'?'among':key==='letters'?'defence':null;
+  const gameName=type=>type==='among'?'它在我们之中':'黑魔法防御';
+  const token=()=>crypto.randomUUID();
+  async function rpc(name,body){
+    const response=await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const data=await response.json().catch(()=>({error:'网络响应异常'}));
+    if(!response.ok)throw new Error(data.message||data.error||'房间连接失败');
+    if(data?.error)throw new Error(errorText(data.error));
+    return data;
+  }
+  function errorText(code){return({ROOM_NOT_FOUND:'找不到这个房间，请检查房间码。',ROOM_FULL:'房间人数已满。',ROOM_STARTED:'游戏已经开始，不能再加入。',NAME_TAKEN:'这个昵称已经有人使用。',NEED_3_TO_5:'需要 3–5 名玩家才能开始。',NOT_HOST:'只有房主可以执行这个操作。',NO_CARDS:'题卡尚未录入，房间功能已就绪。'})[code]||code;}
+  function panel(key){
+    const type=gameType(key);if(!type)return'';
+    const hidden=type==='defence'?' is-hidden':'';
+    return `<section class="room-section${hidden}" id="room-panel" data-room-type="${type}"><div class="room-head"><div><p class="eyebrow">LIVE ROOM</p><h2>在线房间</h2></div><p>${type==='among'?'3–5 人加入同一房间。开始后，每个人只能看到自己的身份。':'组员加入同一房间，由房主抽取一张全组共享的题卡。'}</p></div><div id="room-view">${entry(type)}</div></section>`;
+  }
+  function entry(type){return `<div class="room-entry"><article class="room-box"><h3>创建房间</h3><p>输入临时昵称，生成一个房间码。</p><form class="room-form" id="create-room"><input name="nickname" maxlength="16" autocomplete="nickname" placeholder="你的临时昵称" required><button class="primary" type="submit">创建房间</button></form></article><article class="room-box"><h3>加入房间</h3><p>输入队友分享的房间码。</p><form class="room-form" id="join-room"><input name="nickname" maxlength="16" autocomplete="nickname" placeholder="你的临时昵称" required><input class="room-code-input" name="code" maxlength="6" placeholder="房间码" required><button class="secondary" type="submit">加入房间</button></form></article></div><p class="room-error" id="room-error"></p><p class="room-note">无需注册账号。房间和临时昵称只用于本轮游戏。</p>`;}
+  function bind(key){
+    clearInterval(timer);timer=null;currentGame=gameType(key);if(!currentGame)return;
+    const panel=document.querySelector('#room-panel');if(!panel)return;
+    document.querySelector('[data-room="defence"]')?.addEventListener('click',()=>{panel.classList.remove('is-hidden');panel.scrollIntoView({behavior:'smooth'});});
+    const saved=sessionStorage.getItem(`room_${currentGame}`);if(saved){try{session=JSON.parse(saved);refresh();startPolling();return}catch{sessionStorage.removeItem(`room_${currentGame}`)}}
+    bindEntry();
+  }
+  function bindEntry(){
+    document.querySelector('#create-room')?.addEventListener('submit',async event=>{event.preventDefault();const form=new FormData(event.currentTarget);await enter('create_room',{p_game_type:currentGame,p_nickname:String(form.get('nickname')).trim(),p_player_token:token()});});
+    document.querySelector('#join-room')?.addEventListener('submit',async event=>{event.preventDefault();const form=new FormData(event.currentTarget);await enter('join_room',{p_room_code:String(form.get('code')).trim().toUpperCase(),p_nickname:String(form.get('nickname')).trim(),p_player_token:token()});});
+  }
+  async function enter(method,body){try{setError('正在连接…');const data=await rpc(method,body);session={roomCode:data.room_code,playerToken:body.p_player_token,gameType:currentGame};sessionStorage.setItem(`room_${currentGame}`,JSON.stringify(session));await refresh();startPolling();}catch(error){setError(error.message)}}
+  function setError(message){const el=document.querySelector('#room-error');if(el)el.textContent=message;}
+  function startPolling(){clearInterval(timer);timer=setInterval(refresh,1800);}
+  async function refresh(){if(!session)return;try{const state=await rpc('get_room_state',{p_room_code:session.roomCode,p_player_token:session.playerToken});renderLive(state);}catch(error){const el=document.querySelector('#room-stage-error');if(el)el.textContent=error.message;}}
+  function renderLive(state){
+    const view=document.querySelector('#room-view');if(!view)return;
+    const count=state.players.length;
+    const canStart=state.game_type==='among'&&state.status==='waiting'&&state.is_host&&count>=3&&count<=5;
+    const controls=state.game_type==='among'?(state.status==='waiting'?(state.is_host?`<button class="primary" id="room-action" ${canStart?'':'disabled'}>分配身份并开始</button>`:'<p class="room-status">等待房主开始游戏…</p>'):''):(state.shared_card?'':state.is_host?'<button class="primary" id="room-action">共同抽取题卡</button>':'<p class="room-status">等待房主抽取题卡…</p>');
+    const stage=state.game_type==='among'?(state.status==='started'?`<div class="identity-card"><small>只对你可见 · YOUR IDENTITY</small><h3>${state.own_role==='possessed'?'被附身者':'人类'}</h3><p>${state.own_role==='possessed'?'隐藏你的特殊身份，不要被其他人识破。':'观察其他玩家的回答，找出被附身者。'}</p></div>`:`<h3>等待玩家加入</h3><p class="room-status">满 3 人后房主可以开始，最多 5 人。系统会随机选出且只选出 1 位被附身者。</p>`):(state.shared_card?`<div class="shared-card"><small>全组共享题卡</small><h3>${state.shared_card.title}</h3><p>${state.shared_card.content}</p></div>`:`<h3>等待共同抽题</h3><p class="room-status">房主点击抽题后，同一房间的所有组员会看到同一张题卡。</p>`);
+    view.innerHTML=`<div class="room-live"><aside class="room-sidebar"><small>房间码 · ROOM CODE</small><div class="room-code">${state.room_code}</div><b>${gameName(state.game_type)} · ${count}${state.game_type==='among'?'/5':''} 人</b><div class="player-list">${state.players.map(p=>`<div class="player"><span>${escapeHTML(p.nickname)}</span>${p.is_host?'<small>房主</small>':''}</div>`).join('')}</div></aside><div class="room-stage">${stage}<div class="room-actions">${controls}<button class="secondary" id="leave-room">离开房间</button></div><p class="room-error" id="room-stage-error"></p></div></div>`;
+    document.querySelector('#room-action')?.addEventListener('click',act);
+    document.querySelector('#leave-room')?.addEventListener('click',leave);
+  }
+  async function act(){try{const name=currentGame==='among'?'start_among_game':'draw_defence_card';await rpc(name,{p_room_code:session.roomCode,p_player_token:session.playerToken});await refresh();}catch(error){const el=document.querySelector('#room-stage-error');if(el)el.textContent=error.message;}}
+  function leave(){clearInterval(timer);timer=null;sessionStorage.removeItem(`room_${currentGame}`);session=null;const view=document.querySelector('#room-view');if(view){view.innerHTML=entry(currentGame);bindEntry();}}
+  function escapeHTML(text){return String(text).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  return{panel,bind};
+})();
