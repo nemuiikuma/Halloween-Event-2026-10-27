@@ -8,7 +8,8 @@
 .rule-copy .rule-intro{font-size:16px;color:#211924;margin-bottom:30px}
 .hero h1{font-size:clamp(64px,11vw,150px);letter-spacing:-.075em}
 .hero h1 em{margin-left:4vw}
+.hero-cn{margin:18px 0 0 8vw;color:var(--violet);font-size:clamp(20px,2.5vw,34px);font-weight:900;letter-spacing:.28em}
 .intro{max-width:760px}
 .intro span{display:block;line-height:1.8}
 .c6{--accent:#ffd45c}.c7{--accent:#75f0bd}.c8{--accent:#c4a1ff}
-@media(max-width:760px){.hero h1{font-size:16vw;margin-top:13vh}.hero h1 em{margin-left:0}.rule-copy h3{font-size:17px}.rule-copy{font-size:13px}}
+@media(max-width:760px){.hero h1{font-size:16vw;margin-top:13vh}.hero h1 em{margin-left:0}.hero-cn{margin-left:0;font-size:20px}.rule-copy h3{font-size:17px}.rule-copy{font-size:13px}}
