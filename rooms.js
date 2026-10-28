@@ -1,7 +1,7 @@
 window.RoomUI=(()=>{
   const SUPABASE_URL='https://rukxdhojmnrcbxbjrzsn.supabase.co';
   const SUPABASE_KEY='sb_publishable_hRMfYZTp6WYHp6ddDCR6Mw_1iFdqhJ4';
-  let timer=null,currentGame=null,session=null;
+  let timer=null,currentGame=null,session=null,identityRevealUntil=0;
 
   const possessedRules=[
     ['每次回答时，必须提到一种颜色。','Mention a color every time you answer.'],
@@ -39,7 +39,7 @@ window.RoomUI=(()=>{
   }
   function entry(type){return `<div class="room-entry"><article class="room-box"><h3>创建房间</h3><p>输入临时昵称，生成一个房间码。</p><form class="room-form" id="create-room"><input name="nickname" maxlength="16" autocomplete="nickname" placeholder="你的临时昵称" required><button class="primary" type="submit">创建房间</button></form></article><article class="room-box"><h3>加入房间</h3><p>输入队友分享的房间码。</p><form class="room-form" id="join-room"><input name="nickname" maxlength="16" autocomplete="nickname" placeholder="你的临时昵称" required><input class="room-code-input" name="code" maxlength="6" placeholder="房间码" required><button class="secondary" type="submit">加入房间</button></form></article></div><p class="room-error" id="room-error"></p><p class="room-note">无需注册账号。房间和临时昵称只用于本轮游戏。</p>`;}
   function bind(key){
-    clearInterval(timer);timer=null;currentGame=gameType(key);if(!currentGame)return;
+    clearInterval(timer);timer=null;identityRevealUntil=0;currentGame=gameType(key);if(!currentGame)return;
     const panel=document.querySelector('#room-panel');if(!panel)return;
     document.querySelector('[data-room="defence"]')?.addEventListener('click',()=>{panel.classList.remove('is-hidden');panel.scrollIntoView({behavior:'smooth'});});
     const saved=sessionStorage.getItem(`room_${currentGame}`);if(saved){try{session=JSON.parse(saved);refresh();startPolling();return}catch{sessionStorage.removeItem(`room_${currentGame}`)}}
@@ -64,7 +64,11 @@ window.RoomUI=(()=>{
     document.querySelector('#finish-defence')?.addEventListener('click',finishDefence);
     document.querySelector('#reveal-solution')?.addEventListener('click',()=>showSolution(state));
     document.querySelector('#leave-room')?.addEventListener('click',leave);
-    document.querySelector('#reveal-identity')?.addEventListener('click',()=>{document.querySelector('#private-identity')?.classList.remove('is-concealed');document.querySelector('#reveal-identity')?.remove();});
+    document.querySelector('#reveal-identity')?.addEventListener('click',()=>{
+      identityRevealUntil=Date.now()+15000;
+      document.querySelector('#private-identity')?.classList.remove('is-concealed');
+      document.querySelector('#reveal-identity')?.remove();
+    });
     if(state.game_type==='defence'&&state.status==='finished'&&state.shared_card?.solution)showSolutionOnce(state);
   }
   function defenceStage(card){return `<article class="soup-surface-card"><div class="soup-card-meta"><span>BLACK MAGIC DEFENCE</span><small>${escapeHTML(card.difficulty||'')} · ${escapeHTML(card.time_limit||'')}</small></div><p>汤面 · THE MYSTERY</p><h3>${escapeHTML(card.title)}</h3><div class="soup-surface">${escapeHTML(card.content).replace(/\n/g,'<br>')}</div><small class="soup-hint">向主持人提出只能用“是 / 不是 / 无关”回答的问题，推理出完整真相。</small></article>`;}
@@ -79,12 +83,13 @@ window.RoomUI=(()=>{
   function identityStage(state){
     const possessed=state.own_role==='possessed';
     const rule=possessed?possessedRules[stableIndex(session.playerToken,possessedRules.length)]:null;
-    return `<div class="identity-warning"><span>请遮住屏幕</span><small>DO NOT SHOW THIS CARD TO OTHER PLAYERS</small></div><button class="primary reveal-identity" id="reveal-identity">查看我的身份 · Reveal my identity</button><article class="identity-card ${possessed?'is-possessed':'is-human'} is-concealed" id="private-identity"><small>只对你可见 · YOUR IDENTITY</small><div class="identity-symbol">${possessed?'◉':'○'}</div><h3>${possessed?'你是“被附身者”':'你是“人类”'}</h3><h4>${possessed?'YOU ARE THE “POSSESSOR”':'YOU ARE “HUMAN”'}</h4>${possessed?`<div class="secret-rule"><small>你的秘密规则 · YOUR SECRET RULE</small><strong>${rule[0]}</strong><b>${rule[1]}</b></div><p>完成秘密规则，并避免在最终投票中被发现。</p><p class="identity-en">Complete your secret rule and avoid being detected in the final vote.</p>`:`<p>人群中混入了一名“被附身者”。仔细观察其他玩家的言语与动作，找出他们试图掩盖的异常。</p><p class="identity-en">A “Possessor” is hiding among the group. Watch the other players closely and identify the unusual behaviour they are trying to conceal.</p><strong class="human-goal">在最终投票中，找出真正的“被附身者”<br><span>Find the true “Possessor” in the final vote.</span></strong>`}</article>`;
+    const revealed=Date.now()<identityRevealUntil;
+    return `<div class="identity-warning"><span>请遮住屏幕</span><small>DO NOT SHOW THIS CARD TO OTHER PLAYERS</small></div>${revealed?'':`<button class="primary reveal-identity" id="reveal-identity">查看我的身份 · Reveal my identity</button>`}<article class="identity-card ${possessed?'is-possessed':'is-human'}${revealed?'':' is-concealed'}" id="private-identity"><small>只对你可见 · YOUR IDENTITY</small><div class="identity-symbol">${possessed?'◉':'○'}</div><h3>${possessed?'你是“被附身者”':'你是“人类”'}</h3><h4>${possessed?'YOU ARE THE “POSSESSOR”':'YOU ARE “HUMAN”'}</h4>${possessed?`<div class="secret-rule"><small>你的秘密规则 · YOUR SECRET RULE</small><strong>${rule[0]}</strong><b>${rule[1]}</b></div><p>完成秘密规则，并避免在最终投票中被发现。</p><p class="identity-en">Complete your secret rule and avoid being detected in the final vote.</p>`:`<p>人群中混入了一名“被附身者”。仔细观察其他玩家的言语与动作，找出他们试图掩盖的异常。</p><p class="identity-en">A “Possessor” is hiding among the group. Watch the other players closely and identify the unusual behaviour they are trying to conceal.</p><strong class="human-goal">在最终投票中，找出真正的“被附身者”<br><span>Find the true “Possessor” in the final vote.</span></strong>`}</article>`;
   }
   function stableIndex(value,length){let hash=0;for(const char of String(value)){hash=((hash<<5)-hash)+char.charCodeAt(0);hash|=0;}return Math.abs(hash)%length;}
   async function act(){try{const name=currentGame==='among'?'start_among_game':'draw_defence_card';await rpc(name,{p_room_code:session.roomCode,p_player_token:session.playerToken});await refresh();}catch(error){const el=document.querySelector('#room-stage-error');if(el)el.textContent=error.message;}}
   async function finishDefence(){try{await rpc('finish_defence_game',{p_room_code:session.roomCode,p_player_token:session.playerToken});await refresh();}catch(error){const el=document.querySelector('#room-stage-error');if(el)el.textContent=error.message;}}
-  async function leave(){const leaving=session;clearInterval(timer);timer=null;sessionStorage.removeItem(`room_${currentGame}`);session=null;if(leaving){try{await rpc('leave_room',{p_room_code:leaving.roomCode,p_player_token:leaving.playerToken});}catch{}}const view=document.querySelector('#room-view');if(view){view.innerHTML=entry(currentGame);bindEntry();}}
+  async function leave(){const leaving=session;clearInterval(timer);timer=null;identityRevealUntil=0;sessionStorage.removeItem(`room_${currentGame}`);session=null;if(leaving){try{await rpc('leave_room',{p_room_code:leaving.roomCode,p_player_token:leaving.playerToken});}catch{}}const view=document.querySelector('#room-view');if(view){view.innerHTML=entry(currentGame);bindEntry();}}
   function escapeHTML(text){return String(text).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
   return{panel,bind};
 })();
