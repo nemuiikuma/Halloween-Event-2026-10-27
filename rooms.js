@@ -57,18 +57,21 @@ window.RoomUI=(()=>{
     const view=document.querySelector('#room-view');if(!view)return;
     const count=state.players.length;
     const canStart=state.game_type==='among'&&state.status==='waiting'&&state.is_host&&count>=3&&count<=5;
-    const controls=state.game_type==='among'?(state.status==='waiting'?(state.is_host?`<button class="primary" id="room-action" ${canStart?'':'disabled'}>分配身份并开始</button>`:'<p class="room-status">等待房主开始游戏…</p>'):''):(state.status==='waiting'?(state.is_host?'<button class="primary" id="room-action">共同抽取题卡</button>':'<p class="room-status">等待房主抽取题卡…</p>'):state.status==='started'?(state.is_host?'<button class="primary" id="finish-defence">解散房间并揭晓汤底</button>':'<p class="room-status">正在推理中，等待房主揭晓汤底…</p>'):'<p class="room-status room-finished">本轮已结束，汤底已揭晓。</p>');
+    const controls=state.game_type==='among'?(state.status==='waiting'?(state.is_host?`<button class="primary" id="room-action" ${canStart?'':'disabled'}>分配身份并开始</button>`:'<p class="room-status">等待房主开始游戏…</p>'):''):(state.status==='waiting'?(state.is_host?'<button class="primary" id="room-action">共同抽取题卡</button>':'<p class="room-status">等待房主抽取题卡…</p>'):state.status==='started'?(state.is_host?'<button class="primary" id="finish-defence">解散房间并揭晓汤底</button>':'<p class="room-status">正在推理中，等待房主揭晓汤底…</p>'):'<button class="primary" id="reveal-solution">查看汤底</button><p class="room-status room-finished">本轮已结束，汤底可以随时重新查看。</p>');
     const stage=state.game_type==='among'?(state.status==='started'?identityStage(state):`<h3>等待玩家加入</h3><p class="room-status">满 3 人后房主可以开始，最多 5 人。系统会随机选出且只选出 1 位被附身者。</p>`):(state.shared_card?defenceStage(state.shared_card):`<h3>等待共同抽题</h3><p class="room-status">房主点击抽题后，同一房间的所有组员会看到同一张题卡。</p>`);
     view.innerHTML=`<div class="room-live"><aside class="room-sidebar"><small>房间码 · ROOM CODE</small><div class="room-code">${state.room_code}</div><b>${gameName(state.game_type)} · ${count}${state.game_type==='among'?'/5':''} 人</b><div class="player-list">${state.players.map(p=>`<div class="player"><span>${escapeHTML(p.nickname)}</span>${p.is_host?'<small>房主</small>':''}</div>`).join('')}</div></aside><div class="room-stage">${stage}<div class="room-actions">${controls}<button class="secondary" id="leave-room">离开房间</button></div><p class="room-error" id="room-stage-error"></p></div></div>`;
     document.querySelector('#room-action')?.addEventListener('click',act);
     document.querySelector('#finish-defence')?.addEventListener('click',finishDefence);
+    document.querySelector('#reveal-solution')?.addEventListener('click',()=>showSolution(state));
     document.querySelector('#leave-room')?.addEventListener('click',leave);
     document.querySelector('#reveal-identity')?.addEventListener('click',()=>{document.querySelector('#private-identity')?.classList.remove('is-concealed');document.querySelector('#reveal-identity')?.remove();});
     if(state.game_type==='defence'&&state.status==='finished'&&state.shared_card?.solution)showSolutionOnce(state);
   }
   function defenceStage(card){return `<article class="soup-surface-card"><div class="soup-card-meta"><span>BLACK MAGIC DEFENCE</span><small>${escapeHTML(card.difficulty||'')} · ${escapeHTML(card.time_limit||'')}</small></div><p>汤面 · THE MYSTERY</p><h3>${escapeHTML(card.title)}</h3><div class="soup-surface">${escapeHTML(card.content).replace(/\n/g,'<br>')}</div><small class="soup-hint">向主持人提出只能用“是 / 不是 / 无关”回答的问题，推理出完整真相。</small></article>`;}
   function showSolutionOnce(state){
-    const key=`solution_${state.room_code}`;if(sessionStorage.getItem(key))return;sessionStorage.setItem(key,'1');
+    const key=`solution_${state.room_code}`;if(sessionStorage.getItem(key))return;showSolution(state);sessionStorage.setItem(key,'1');
+  }
+  function showSolution(state){
     const modal=document.querySelector('#rule-modal'),content=document.querySelector('#rule-content');if(!modal||!content)return;
     content.innerHTML=`<div class="soup-solution-card"><p class="rule-kicker">THE TRUTH REVEALED</p><h2 id="rule-title">汤底揭晓</h2><h3>${escapeHTML(state.shared_card.title)}</h3><div>${escapeHTML(state.shared_card.solution).replace(/\n/g,'<br>')}</div><button class="primary wide" data-solution-close>读完了</button></div>`;
     modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('locked');content.querySelector('[data-solution-close]').addEventListener('click',()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('locked');});
