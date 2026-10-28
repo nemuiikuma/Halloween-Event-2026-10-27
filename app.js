@@ -31,6 +31,29 @@ const ghostTeamCards = [
   ['双人抓鬼大作战——反向','听到「反向」时，玩家需要执行与指令相反的动作。','听到「Thriller!」时，玩家 A 和 B 必须迅速击掌并欢呼。']
 ];
 
+const midnightCards = [
+  {kind:'目标词', target:'吸血鬼', en:'VAMPIRE'},
+  {kind:'目标词', target:'南瓜灯', en:"JACK-O'-LANTERN"},
+  {kind:'目标词', target:'科学怪人', en:'FRANKENSTEIN'},
+  {kind:'目标词', target:'德古拉', en:'DRACULA'},
+  {kind:'目标词', target:'招魂', en:'THE CONJURING'},
+  {kind:'目标词', target:'女巫', en:'WITCH'},
+  {kind:'目标词', target:'不给糖就捣蛋', en:'TRICK OR TREAT'},
+  {kind:'目标词', target:'木乃伊', en:'MUMMY'},
+  {kind:'目标词', target:'狼人', en:'WEREWOLF'},
+  {kind:'目标词', target:'僵尸', en:'ZOMBIE'},
+  {kind:'目标句', target:'你是不是喝多了？'},
+  {kind:'目标句', target:'你没病吧？/ 你没事儿吧？'},
+  {kind:'目标句', target:'你走开啊！'},
+  {kind:'目标句', target:'你不要过来啊！'},
+  {kind:'目标句', target:'亲爱的 / 宝贝'},
+  {kind:'目标句', target:'我不同意'},
+  {kind:'目标句', target:'你在干嘛？'},
+  {kind:'目标句', target:'你认真的嘛？'},
+  {kind:'目标句', target:'你是不是疯了？'},
+  {kind:'目标句', target:'快去睡觉！'}
+];
+
 const games = {
   mystery: {
     no:'01', icon:'◉', theme:'violet', en:'MYSTERY BOX', title:'恐怖箱', accent:'#a675ff',
@@ -163,7 +186,8 @@ function page(key){
   const roomPanel=window.RoomUI?.panel?.(key)||'';
   const mysteryDraw=key==='mystery'?`<section class="mystery-draw is-hidden" id="mystery-draw" aria-live="polite"><div class="mystery-draw-head"><p class="eyebrow">YOUR MISSION</p><h2>本轮题卡</h2></div><div id="mystery-card-shell"></div></section>`:'';
   const ghostDraw=key==='ghost'?`<section class="ghost-draw is-hidden" id="ghost-draw" aria-live="polite"><div class="ghost-draw-head"><p class="eyebrow">SPECIAL RULE</p><h2>本轮特殊规则卡</h2></div><div id="ghost-card-shell"></div></section>`:'';
-  app.innerHTML=`<section class="game-hero ${isInfo?'info-hero':''}" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no}｜${g.en}</p><h1>${g.title}</h1>${heroActions}</section>${inlineRules}${choices}${mysteryDraw}${ghostDraw}${roomPanel}${recap}`;
+  const midnightDraw=key==='midnight'?`<section class="midnight-draw is-hidden" id="midnight-draw" aria-live="polite"><div class="midnight-draw-head"><p class="eyebrow">MIDNIGHT MISSION</p><h2>本轮午夜任务卡</h2></div><div id="midnight-card-shell"></div></section>`:'';
+  app.innerHTML=`<section class="game-hero ${isInfo?'info-hero':''}" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no}｜${g.en}</p><h1>${g.title}</h1>${heroActions}</section>${inlineRules}${choices}${mysteryDraw}${ghostDraw}${midnightDraw}${roomPanel}${recap}`;
   document.documentElement.style.setProperty('--page-accent',g.accent); bindPage(g,key); window.RoomUI?.bind?.(key); window.scrollTo(0,0);
   if(!isInfo&&!visited.has(key)){visited.add(key);setTimeout(()=>openRules(g),180);}
 }
@@ -171,6 +195,10 @@ function page(key){
 function openRules(g){ruleContent.innerHTML=rulesHTML(g);modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('locked');ruleContent.querySelector('[data-close]').addEventListener('click',closeRules);}
 function closeRules(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('locked');}
 function showToast(message){toast.textContent=message;toast.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>toast.classList.remove('show'),2400);}
+function showStallNotice(){
+  ruleContent.innerHTML=`<div class="stall-notice"><div class="stall-notice-icon">↗</div><p class="rule-kicker">ON-SITE CHALLENGE</p><h2 id="rule-title">请前往游戏摊位游玩</h2><button class="primary wide" data-close>我知道了</button></div>`;
+  modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('locked');ruleContent.querySelector('[data-close]').addEventListener('click',closeRules);
+}
 function drawMysteryCard(mode){
   const section=document.querySelector('#mystery-draw');const shell=document.querySelector('#mystery-card-shell');if(!section||!shell)return;
   const last=Number(section.dataset.last??-1);let index=Math.floor(Math.random()*mysteryCards.length);if(mysteryCards.length>1&&index===last)index=(index+1)%mysteryCards.length;section.dataset.last=index;
@@ -186,7 +214,14 @@ function drawGhostCard(mode){
   shell.innerHTML=`<article class="ghost-task-card ${team?'team-card':'solo-card'}"><div class="ghost-card-index"><span>CARD ${String(index+1).padStart(2,'0')}</span><small>${mode}</small></div><div class="ghost-sigil">${team?'✣ ✣':'✣'}</div><p class="ghost-label">特殊规则 · SPECIAL RULE</p><h3>${card[0]}</h3><div class="ghost-rule-main">${card[1]}</div><div class="ghost-thriller"><small>THRILLER!</small><strong>${card[2]}</strong></div><div class="ghost-card-actions"><button class="primary" id="ghost-draw-again">换一张题卡</button><button class="secondary" id="ghost-card-review">回顾规则</button></div></article>`;
   document.querySelector('#ghost-draw-again')?.addEventListener('click',()=>drawGhostCard(mode));document.querySelector('#ghost-card-review')?.addEventListener('click',()=>openRules(games.ghost));section.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function bindPage(g,key){document.querySelector('#review-rules')?.addEventListener('click',()=>openRules(g));document.querySelector('#review-rules-2')?.addEventListener('click',()=>openRules(g));document.querySelector('#start-challenge')?.addEventListener('click',()=>document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#open-room')?.addEventListener('click',()=>document.querySelector('#room-panel')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#draw-card')?.addEventListener('click',()=>showToast('题卡正在准备中，下一阶段即可随机抽取 ✦'));document.querySelectorAll('.choice:not([data-room])').forEach(button=>button.addEventListener('click',()=>key==='mystery'?drawMysteryCard(button.dataset.choice):key==='ghost'?drawGhostCard(button.dataset.choice):showToast(`已选择「${button.dataset.choice}」· 题卡功能即将加入`)));}
+function drawMidnightCard(){
+  const section=document.querySelector('#midnight-draw');const shell=document.querySelector('#midnight-card-shell');if(!section||!shell)return;
+  const last=Number(section.dataset.last??-1);let index=Math.floor(Math.random()*midnightCards.length);if(midnightCards.length>1&&index===last)index=(index+1)%midnightCards.length;section.dataset.last=index;
+  const card=midnightCards[index];section.classList.remove('is-hidden');
+  shell.innerHTML=`<article class="midnight-task-card"><div class="midnight-card-index"><span>MIDNIGHT MISSION ${String(index+1).padStart(2,'0')}</span><small>90 SECONDS</small></div><div class="midnight-phone">☎</div><p class="midnight-target-label">你的${card.kind}</p><h3>${card.target}</h3>${card.en?`<strong class="midnight-target-en">${card.en}</strong>`:''}<div class="midnight-instructions"><p>拨通电话，在90秒内引导对方说出目标词</p><p>不能直接说出目标词，也不能要求对方重复</p></div><div class="midnight-card-actions"><button class="primary" id="midnight-draw-again">换一张题卡</button><button class="secondary" id="midnight-card-review">回顾规则</button></div></article>`;
+  document.querySelector('#midnight-draw-again')?.addEventListener('click',drawMidnightCard);document.querySelector('#midnight-card-review')?.addEventListener('click',()=>openRules(games.midnight));section.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function bindPage(g,key){document.querySelector('#review-rules')?.addEventListener('click',()=>openRules(g));document.querySelector('#review-rules-2')?.addEventListener('click',()=>openRules(g));document.querySelector('#start-challenge')?.addEventListener('click',()=>document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#open-room')?.addEventListener('click',()=>document.querySelector('#room-panel')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#draw-card')?.addEventListener('click',()=>key==='midnight'?document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}):showToast('题卡正在准备中，下一阶段即可随机抽取 ✦'));document.querySelectorAll('.choice:not([data-room])').forEach(button=>button.addEventListener('click',()=>{const choice=button.dataset.choice;if(key==='mystery')drawMysteryCard(choice);else if(key==='ghost')drawGhostCard(choice);else if(key==='midnight'&&choice.startsWith('Option A'))drawMidnightCard();else if((key==='midnight'&&choice.startsWith('Option B'))||(key==='letters'&&choice.startsWith('Potions')))showStallNotice();else showToast(`已选择「${choice}」· 题卡功能即将加入`);}));}
 
 modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeRules));
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeRules();});
