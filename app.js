@@ -195,7 +195,7 @@ const toast=document.querySelector('#toast');
 const visited=new Set();
 
 function card(key){
-  if(key==='personality') return `<a class="card c8" href="${PERSONALITY_URL}"><span class="num">08</span><i>◈</i><div><small>HALLOWEEN IDENTITY TEST</small><h3>万圣节人格测试</h3><p>天黑以后，哪个人格会悄悄苏醒？</p></div><b>开始测试 ↗</b></a>`;
+  if(key==='personality') return `<a class="card c8" id="personality-link" href="${PERSONALITY_URL}"><span class="num">08</span><i>◈</i><div><small>HALLOWEEN IDENTITY TEST</small><h3>万圣节人格测试</h3><p>天黑以后，哪个人格会悄悄苏醒？</p></div><b>开始测试 ↗</b></a>`;
   const g=games[key];
   return `<a class="card c${Number(g.no)}" href="#/${key}"><span class="num">${g.no}</span><i>${g.icon}</i><div><small>${g.en}</small><h3>${g.title}</h3><p>${g.cardText}</p></div><b>${key==='rewards'||key==='diy'?'查看详情':'进入游戏'} ↗</b></a>`;
 }
@@ -203,8 +203,26 @@ function card(key){
 function home(){
   document.title='After Midnight｜午夜之后'; app.className='';
   app.innerHTML=`<section class="hero"><div class="eyebrow">HALLOWEEN LIMITED-TIME CHALLENGE</div><h1>AFTER<br><em>MIDNIGHT</em></h1><div class="hero-cn">午夜之后</div><div class="intro"><p>万圣节限时挑战</p><span>城市陷入沉睡，午夜之后，熟悉的规则开始失效，有什么危险的东西即将苏醒</span></div><button class="scroll" id="explore-activities" type="button">探索活动 <b>↓</b></button></section><section class="games" id="games"><div class="section-head"><p>CHOOSE YOUR ADVENTURE</p><h2>午夜之后</h2><span>01 — 08</span></div><div class="grid">${order.map(card).join('')}</div></section>`;
-  document.querySelector('#explore-activities')?.addEventListener('click',()=>document.querySelector('#games')?.scrollIntoView({behavior:'smooth',block:'start'}));
+  window.Analytics?.page('home');
+  document.querySelector('#explore-activities')?.addEventListener('click',()=>{window.Analytics?.track('explore_click','home');document.querySelector('#games')?.scrollIntoView({behavior:'smooth',block:'start'});});
+  document.querySelector('#personality-link')?.addEventListener('click',()=>window.Analytics?.track('identity_test_open','personality'));
   window.scrollTo(0,0);
+}
+
+const analyticsLabels={home:'活动首页',mystery:'恐怖箱',among:'它在我们之中',ghost:'去抓鬼',midnight:'午夜凶铃 / 魔鬼挑战',letters:'诅咒信件',rewards:'兑奖摊位',diy:'万圣节 DIY',personality:'人格测试',analytics:'数据看板',page_view:'页面访问',explore_click:'探索活动',challenge_select:'选择挑战',card_draw:'抽取题卡',answer_submit:'提交答案',room_create:'创建房间',room_join:'加入房间',room_start:'开始游戏 / 抽题',room_finish:'结束房间',identity_test_open:'打开人格测试'};
+const metricLabel=value=>analyticsLabels[value]||value;
+function analyticsPage(){
+  document.title='活动数据｜After Midnight';app.className='analytics-page';window.Analytics?.page('analytics');
+  app.innerHTML=`<section class="analytics-shell"><a class="back" href="#/">← 返回活动大厅</a><div class="analytics-heading"><div><p class="eyebrow">ANONYMOUS USAGE ANALYTICS</p><h1>活动数据</h1><p>只显示匿名汇总，不记录姓名、房间码或玩家输入内容。</p></div><button class="secondary" id="analytics-refresh">刷新数据</button></div><div id="analytics-content"><div class="analytics-loading">正在读取统计数据…</div></div></section>`;
+  document.querySelector('#analytics-refresh')?.addEventListener('click',loadAnalytics);loadAnalytics();window.scrollTo(0,0);
+}
+async function loadAnalytics(){
+  const shell=document.querySelector('#analytics-content');if(!shell)return;shell.innerHTML='<div class="analytics-loading">正在读取统计数据…</div>';
+  try{
+    const data=await window.Analytics.summary();const pages=data.pages||[],actions=data.actions||[],answers=data.answers||[],daily=data.daily||[];
+    const table=(headers,rows)=>`<div class="analytics-table-wrap"><table><thead><tr>${headers.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.join(''):`<tr><td colspan="${headers.length}">暂无数据</td></tr>`}</tbody></table></div>`;
+    shell.innerHTML=`<section class="analytics-metrics"><article><small>UNIQUE VISITORS</small><strong>${data.unique_visitors||0}</strong><span>独立访客</span></article><article><small>SESSIONS</small><strong>${data.total_sessions||0}</strong><span>访问会话</span></article><article><small>EVENTS</small><strong>${data.total_events||0}</strong><span>记录事件</span></article></section><section class="analytics-block"><h2>页面访问</h2>${table(['页面','访问次数','独立访客'],pages.map(row=>`<tr><td>${metricLabel(row.page_key)}</td><td>${row.views}</td><td>${row.visitors}</td></tr>`))}</section><section class="analytics-block"><h2>功能使用</h2>${table(['功能','板块','次数'],actions.map(row=>`<tr><td>${metricLabel(row.event_name)}</td><td>${metricLabel(row.page_key)}</td><td>${row.count}</td></tr>`))}</section><section class="analytics-block"><h2>答题统计</h2>${table(['题目类型','提交次数','答对次数','正确率'],answers.map(row=>`<tr><td>${metricLabel(row.page_key)}</td><td>${row.attempts}</td><td>${row.correct}</td><td>${row.attempts?Math.round(row.correct/row.attempts*100):0}%</td></tr>`))}</section><section class="analytics-block"><h2>最近 30 天</h2>${table(['日期','页面访问','独立访客'],daily.map(row=>`<tr><td>${row.day}</td><td>${row.views}</td><td>${row.visitors}</td></tr>`))}</section><p class="analytics-updated">更新于 ${new Date(data.generated_at).toLocaleString('zh-HK')}</p>`;
+  }catch(error){shell.innerHTML=`<div class="analytics-error">${error.message}，请稍后刷新。</div>`;}
 }
 
 function rulesHTML(g){return `<div class="rule-kicker">${g.no}｜${g.title} ${g.en}</div><h2 id="rule-title">游戏规则<em>How to Play</em></h2><div class="rule-copy">${g.rules}</div><button class="primary wide" data-close>我知道了，开始挑战</button>`;}
@@ -224,8 +242,9 @@ function page(key){
   const midnightDraw=key==='midnight'?`<section class="midnight-draw is-hidden" id="midnight-draw" aria-live="polite"><div class="midnight-draw-head"><p class="eyebrow">MIDNIGHT MISSION</p><h2>本轮午夜任务卡</h2></div><div id="midnight-card-shell"></div></section>`:'';
   const historyQuiz=key==='letters'?`<section class="history-quiz is-hidden" id="history-quiz" aria-live="polite"><div class="history-quiz-head"><p class="eyebrow">HISTORY OF MAGIC</p><h2>魔法史题卡</h2></div><div id="history-quiz-shell"></div></section>`:'';
   const erisedDraw=key==='letters'?`<section class="erised-draw is-hidden" id="erised-draw" aria-live="polite"><div class="erised-draw-head"><p class="eyebrow">MIRROR OF ERISED</p><h2>厄里斯魔镜题卡</h2></div><div id="erised-card-shell"></div></section>`:'';
-  app.innerHTML=`<section class="game-hero ${isInfo?'info-hero':''}" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no}｜${g.en}</p><h1>${g.title}</h1>${heroActions}</section>${inlineRules}${choices}${mysteryDraw}${ghostDraw}${midnightDraw}${historyQuiz}${erisedDraw}${roomPanel}${recap}`;
-  document.documentElement.style.setProperty('--page-accent',g.accent); bindPage(g,key); window.RoomUI?.bind?.(key); window.scrollTo(0,0);
+  const diyTutorials=key==='diy'?`<section class="diy-tutorials" id="diy-tutorials"><p class="eyebrow">DIY B · VIDEO TUTORIALS</p><div class="choice-head"><h2>扭扭棒制作教程</h2><span>点击后将在新页面打开微信视频</span></div><div class="tutorial-grid"><a href="https://mp.weixin.qq.com/s/Z8fHMHK5KV2hiMpHkrZRyA" target="_blank" rel="noopener noreferrer"><small>W101-1/3</small><h3>魔法棒教程</h3><b>打开视频 ↗</b></a><a href="http://mp.weixin.qq.com/mp/video?__biz=MzkyNDQ2NjU3OA==&mid=100000545&sn=6f4179952568fea603dc2389bccc9b31&vid=wxv_3150540048795484160&idx=1&vidsn=00460f91f8c8a1b2708accbc9371b30b&fromid=1&scene=1&xtrack=1#wechat_redirect" target="_blank" rel="noopener noreferrer"><small>HEADBAND 01</small><h3>发箍教程 1</h3><b>打开视频 ↗</b></a><a href="http://mp.weixin.qq.com/mp/video?__biz=MzkyNDQ2NjU3OA==&mid=100000561&sn=e5b0f1ed7119e6cd181d852d499746bd&vid=wxv_3150613820042952705&idx=1&vidsn=188bc4785abea5867316593dffbc9c67&fromid=1&scene=1&xtrack=1#wechat_redirect" target="_blank" rel="noopener noreferrer"><small>HEADBAND 02</small><h3>发箍教程 2</h3><b>打开视频 ↗</b></a><a href="http://mp.weixin.qq.com/mp/video?__biz=MzkyNDQ2NjU3OA==&mid=100000557&sn=92c2ab88cc27dfd52d265b1ad779667a&vid=wxv_3150557725085712395&idx=1&vidsn=129bdaae48114462c8c135777f238486&fromid=1&scene=1&xtrack=1#wechat_redirect" target="_blank" rel="noopener noreferrer"><small>HEADBAND 03</small><h3>发箍教程 3</h3><b>打开视频 ↗</b></a></div></section>`:'';
+  app.innerHTML=`<section class="game-hero ${isInfo?'info-hero':''}" style="--accent:${g.accent}"><a class="back" href="#/">← 返回活动大厅</a><div class="game-mark">${g.icon}</div><p class="game-en">${g.no}｜${g.en}</p><h1>${g.title}</h1>${heroActions}</section>${inlineRules}${choices}${diyTutorials}${mysteryDraw}${ghostDraw}${midnightDraw}${historyQuiz}${erisedDraw}${roomPanel}${recap}`;
+  document.documentElement.style.setProperty('--page-accent',g.accent);window.Analytics?.page(key);bindPage(g,key);window.RoomUI?.bind?.(key);window.scrollTo(0,0);
   if(!isInfo&&!visited.has(key)){visited.add(key);setTimeout(()=>openRules(g),180);}
 }
 
@@ -242,6 +261,7 @@ function showQuizResult(correct,card){
   modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('locked');ruleContent.querySelector('[data-close]').addEventListener('click',closeRules);
 }
 function drawMysteryCard(mode){
+  window.Analytics?.track('card_draw','mystery',{mode});
   const section=document.querySelector('#mystery-draw');const shell=document.querySelector('#mystery-card-shell');if(!section||!shell)return;
   const last=Number(section.dataset.last??-1);let index=Math.floor(Math.random()*mysteryCards.length);if(mysteryCards.length>1&&index===last)index=(index+1)%mysteryCards.length;section.dataset.last=index;
   const card=mysteryCards[index];section.classList.remove('is-hidden');
@@ -249,6 +269,7 @@ function drawMysteryCard(mode){
   document.querySelector('#draw-again')?.addEventListener('click',()=>drawMysteryCard(mode));document.querySelector('#card-review')?.addEventListener('click',()=>openRules(games.mystery));section.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function drawGhostCard(mode){
+  window.Analytics?.track('card_draw','ghost',{mode});
   const team=mode.includes('双人');const cards=team?ghostTeamCards:ghostSoloCards;
   const section=document.querySelector('#ghost-draw');const shell=document.querySelector('#ghost-card-shell');if(!section||!shell)return;
   const last=Number(section.dataset.last??-1);let index=Math.floor(Math.random()*cards.length);if(cards.length>1&&index===last)index=(index+1)%cards.length;section.dataset.last=index;
@@ -257,6 +278,7 @@ function drawGhostCard(mode){
   document.querySelector('#ghost-draw-again')?.addEventListener('click',()=>drawGhostCard(mode));document.querySelector('#ghost-card-review')?.addEventListener('click',()=>openRules(games.ghost));section.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function drawMidnightCard(){
+  window.Analytics?.track('card_draw','midnight',{challenge:'midnight_call'});
   const section=document.querySelector('#midnight-draw');const shell=document.querySelector('#midnight-card-shell');if(!section||!shell)return;
   const last=Number(section.dataset.last??-1);let index=Math.floor(Math.random()*midnightCards.length);if(midnightCards.length>1&&index===last)index=(index+1)%midnightCards.length;section.dataset.last=index;
   const card=midnightCards[index];section.classList.remove('is-hidden');
@@ -264,26 +286,28 @@ function drawMidnightCard(){
   document.querySelector('#midnight-draw-again')?.addEventListener('click',drawMidnightCard);document.querySelector('#midnight-card-review')?.addEventListener('click',()=>openRules(games.midnight));section.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function drawHistoryQuiz(){
+  window.Analytics?.track('card_draw','letters',{challenge:'history'});
   const section=document.querySelector('#history-quiz');const shell=document.querySelector('#history-quiz-shell');if(!section||!shell)return;
   const last=Number(section.dataset.last??-1);let index=Math.floor(Math.random()*historyQuestions.length);if(historyQuestions.length>1&&index===last)index=(index+1)%historyQuestions.length;section.dataset.last=index;
   const card=historyQuestions[index];section.classList.remove('is-hidden');
   shell.innerHTML=`<article class="history-question-card"><div class="history-card-index"><span>QUESTION ${String(card.n).padStart(2,'0')} / ${historyQuestions.length}</span><small>${card.category}</small></div><div class="history-question-copy"><h3>${card.cn}</h3><p>${card.en}</p></div><div class="history-options">${card.options.map((option,i)=>`<label><input type="radio" name="history-answer" value="${String.fromCharCode(65+i)}"><span><b>${String.fromCharCode(65+i)}</b>${option.slice(3)}</span></label>`).join('')}</div><div class="history-card-actions"><button class="primary" id="history-submit" disabled>提交答案</button><button class="secondary" id="history-next" disabled>随机下一题</button><button class="secondary" id="history-review">回顾规则</button></div><p class="history-lock-note" id="history-lock-note">请先选择并提交答案，才能抽取下一题。</p></article>`;
   const submit=document.querySelector('#history-submit');const next=document.querySelector('#history-next');const note=document.querySelector('#history-lock-note');
   document.querySelectorAll('input[name="history-answer"]').forEach(input=>input.addEventListener('change',()=>{submit.disabled=false;}));
-  submit.addEventListener('click',()=>{const selected=document.querySelector('input[name="history-answer"]:checked');if(!selected)return;const correct=selected.value===card.answer;document.querySelectorAll('input[name="history-answer"]').forEach(input=>input.disabled=true);submit.disabled=true;next.disabled=false;note.textContent='本题已提交，可以随机抽取下一题。';note.classList.add('is-unlocked');showQuizResult(correct,card);});
+  submit.addEventListener('click',()=>{const selected=document.querySelector('input[name="history-answer"]:checked');if(!selected)return;const correct=selected.value===card.answer;window.Analytics?.track('answer_submit','letters',{challenge:'history',correct});document.querySelectorAll('input[name="history-answer"]').forEach(input=>input.disabled=true);submit.disabled=true;next.disabled=false;note.textContent='本题已提交，可以随机抽取下一题。';note.classList.add('is-unlocked');showQuizResult(correct,card);});
   next.addEventListener('click',drawHistoryQuiz);document.querySelector('#history-review')?.addEventListener('click',()=>openRules(games.letters));section.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function drawErisedCard(){
+  window.Analytics?.track('card_draw','letters',{challenge:'erised'});
   const section=document.querySelector('#erised-draw');const shell=document.querySelector('#erised-card-shell');if(!section||!shell)return;
   const last=Number(section.dataset.last??-1);let index=Math.floor(Math.random()*erisedCards.length);if(erisedCards.length>1&&index===last)index=(index+1)%erisedCards.length;section.dataset.last=index;
   const card=erisedCards[index];section.classList.remove('is-hidden');
   shell.innerHTML=`<article class="erised-task-card"><div class="erised-card-index"><span>FRAGMENT ${String(index+1).padStart(2,'0')} / ${erisedCards.length}</span><small>REASSEMBLE THE RUNES</small></div><div class="erised-sigil">◇</div><div class="erised-story"><h3>${card.cn}</h3><p>${card.en}</p></div><div class="erised-puzzle"><div><small>提示 · HINT</small><strong>${card.hint}</strong></div><div><small>乱序密码 · CIPHER</small><strong>${card.cipher}</strong></div></div><form class="erised-answer-form" id="erised-answer-form"><label for="erised-answer-input">输入答案 · ENTER YOUR ANSWER</label><div><input id="erised-answer-input" name="answer" type="text" autocomplete="off" autocapitalize="characters" placeholder="输入重组后的英文答案" required><button class="primary" type="submit">提交答案</button></div><p id="erised-answer-feedback" aria-live="polite">不区分大小写，空格不会影响判断。</p></form><div class="erised-card-actions"><button class="secondary" id="erised-next">随机下一题</button><button class="secondary" id="erised-review">回顾规则</button></div></article>`;
-  document.querySelector('#erised-answer-form')?.addEventListener('submit',event=>{event.preventDefault();const input=document.querySelector('#erised-answer-input');const feedback=document.querySelector('#erised-answer-feedback');const normalize=value=>String(value).replace(/\s+/g,'').toUpperCase();const correct=normalize(input.value)===normalize(card.answer);feedback.textContent=correct?'回答正确！镜中的符文已经归位。':'答案不正确，请重新排列字母再试一次。';feedback.className=correct?'is-correct':'is-wrong';if(correct){input.disabled=true;event.currentTarget.querySelector('button[type="submit"]').disabled=true;}});
+  document.querySelector('#erised-answer-form')?.addEventListener('submit',event=>{event.preventDefault();const input=document.querySelector('#erised-answer-input');const feedback=document.querySelector('#erised-answer-feedback');const normalize=value=>String(value).replace(/\s+/g,'').toUpperCase();const correct=normalize(input.value)===normalize(card.answer);window.Analytics?.track('answer_submit','letters',{challenge:'erised',correct});feedback.textContent=correct?'回答正确！镜中的符文已经归位。':'答案不正确，请重新排列字母再试一次。';feedback.className=correct?'is-correct':'is-wrong';if(correct){input.disabled=true;event.currentTarget.querySelector('button[type="submit"]').disabled=true;}});
   document.querySelector('#erised-next')?.addEventListener('click',drawErisedCard);document.querySelector('#erised-review')?.addEventListener('click',()=>openRules(games.letters));section.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function bindPage(g,key){document.querySelector('#review-rules')?.addEventListener('click',()=>openRules(g));document.querySelector('#review-rules-2')?.addEventListener('click',()=>openRules(g));document.querySelector('#start-challenge')?.addEventListener('click',()=>document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#open-room')?.addEventListener('click',()=>document.querySelector('#room-panel')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#draw-card')?.addEventListener('click',()=>key==='midnight'||key==='letters'?document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}):showToast('题卡正在准备中，下一阶段即可随机抽取 ✦'));document.querySelectorAll('.choice:not([data-room])').forEach(button=>button.addEventListener('click',()=>{const choice=button.dataset.choice;if(key==='mystery')drawMysteryCard(choice);else if(key==='ghost')drawGhostCard(choice);else if(key==='midnight'&&choice.startsWith('Option A'))drawMidnightCard();else if(key==='letters'&&choice.startsWith('History'))drawHistoryQuiz();else if(key==='letters'&&choice.startsWith('Mirror of Erised'))drawErisedCard();else if((key==='midnight'&&choice.startsWith('Option B'))||(key==='letters'&&choice.startsWith('Potions')))showStallNotice();else showToast(`已选择「${choice}」· 题卡功能即将加入`);}));}
+function bindPage(g,key){document.querySelector('#review-rules')?.addEventListener('click',()=>openRules(g));document.querySelector('#review-rules-2')?.addEventListener('click',()=>openRules(g));document.querySelector('#start-challenge')?.addEventListener('click',()=>document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#open-room')?.addEventListener('click',()=>document.querySelector('#room-panel')?.scrollIntoView({behavior:'smooth'}));document.querySelector('#draw-card')?.addEventListener('click',()=>key==='midnight'||key==='letters'?document.querySelector('#challenge-options')?.scrollIntoView({behavior:'smooth'}):showToast('题卡正在准备中，下一阶段即可随机抽取 ✦'));document.querySelectorAll('.choice:not([data-room])').forEach(button=>button.addEventListener('click',()=>{const choice=button.dataset.choice;window.Analytics?.track('challenge_select',key,{choice});if(key==='mystery')drawMysteryCard(choice);else if(key==='ghost')drawGhostCard(choice);else if(key==='midnight'&&choice.startsWith('Option A'))drawMidnightCard();else if(key==='letters'&&choice.startsWith('History'))drawHistoryQuiz();else if(key==='letters'&&choice.startsWith('Mirror of Erised'))drawErisedCard();else if(key==='diy'&&choice.startsWith('DIY B'))document.querySelector('#diy-tutorials')?.scrollIntoView({behavior:'smooth',block:'start'});else if((key==='midnight'&&choice.startsWith('Option B'))||(key==='letters'&&choice.startsWith('Potions')))showStallNotice();else showToast(`已选择「${choice}」· 请按照现场指引开始制作`);}));}
 
 modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeRules));
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeRules();});
-function route(){closeRules();let path=location.hash;if(path.startsWith('#/'))path=path.slice(2);else if(path.startsWith('#'))path=path.slice(1);const key=path.split('/')[0];key?page(key):home();}
+function route(){closeRules();let path=location.hash;if(path.startsWith('#/'))path=path.slice(2);else if(path.startsWith('#'))path=path.slice(1);const key=path.split('/')[0];if(key==='analytics'){analyticsPage();return;}key?page(key):home();}
 window.addEventListener('hashchange',route); route();
